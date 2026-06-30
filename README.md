@@ -39,3 +39,7 @@
 - `governance.html`: ملفات الحوكمة والتقارير.
 - `partners.html`: الشركاء.
 - `contact.html`: رقم الجوال والبريد الإلكتروني.
+
+
+## تحديث المصادقة
+تمت إضافة Netlify Identity Widget إلى صفحة `/admin/` والصفحات العامة لمعالجة روابط الدعوة واستعادة كلمة المرور مثل `#invite_token` و `#recovery_token`.
