@@ -811,3 +811,39 @@ nav[aria-label="القائمة الرئيسية"] { min-width: 0; flex: 1; displ
 .text-link:hover {
   color: var(--navy);
 }
+
+
+/* Governance categorized file lists */
+.section-heading.compact { max-width: 820px; margin-bottom: 26px; }
+.section-kicker { display: inline-flex; color: var(--gold-dark); font-weight: 900; margin-bottom: 6px; }
+.governance-category-card { display: flex; flex-direction: column; min-height: 310px; }
+.resource-list { display: grid; gap: 12px; }
+.resource-list.mini { margin-top: auto; padding-top: 18px; }
+.resource-list.mini .resource-card { padding: 12px 14px; border-radius: 16px; box-shadow: none; }
+.resource-list.mini .resource-card strong { font-size: 14px; }
+.resource-list.mini .resource-card span:not(.badge) { font-size: 12px; }
+.empty-state {
+  border: 1px dashed rgba(25,49,89,.18);
+  background: rgba(255,253,248,.58);
+  color: var(--slate);
+  border-radius: 16px;
+  padding: 13px 14px;
+  font-weight: 800;
+  font-size: 13px;
+}
+.governance-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+.report-column {
+  background: rgba(255,253,248,.72);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-xs);
+}
+.report-column h3 { margin: 0 0 14px; color: var(--navy); font-size: 22px; }
+.forms-column { background: linear-gradient(135deg, rgba(255,253,248,.84), rgba(248,240,226,.84)); }
+@media (max-width: 820px) { .governance-split { grid-template-columns: 1fr; } }

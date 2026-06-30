@@ -97,28 +97,49 @@
     </a>`).join("");
   }
 
-  function renderGovernance(data) {
-    const grid = $("#cms-governance-documents") || $("#reports .grid");
-    if (!grid || !data || !Array.isArray(data.documents)) return;
+  function resourceItem(item) {
+    const hasFile = !!item.file;
+    const tag = hasFile ? "a" : "div";
+    const href = hasFile ? ` href="${escapeHTML(normalizeUrl(item.file))}" target="_blank" rel="noopener"` : "";
+    const status = hasFile ? "تحميل" : "قريبًا";
+    const meta = [item.year, item.summary].filter(Boolean).join(" — ");
+    return `<${tag} class="resource-card"${href}>
+      <div>
+        <strong>${escapeHTML(item.title)}</strong>
+        <span>${escapeHTML(meta || item.category || "ملف حوكمة")}</span>
+      </div>
+      <span class="badge">${status}</span>
+    </${tag}>`;
+  }
 
-    if (!data.documents.length) {
-      grid.innerHTML = `<div class="resource-card"><div><strong>لا توجد ملفات بعد</strong><span>تضاف الملفات من لوحة الإدارة.</span></div><span class="badge">جاهز</span></div>`;
+  function renderCategoryList(data, selector, category, emptyText) {
+    const container = $(selector);
+    if (!container || !data || !Array.isArray(data.documents)) return;
+    const items = data.documents.filter((item) => (item.category || "").trim() === category);
+    if (!items.length) {
+      container.innerHTML = `<div class="empty-state">${escapeHTML(emptyText || "لا توجد ملفات مرفوعة بعد.")}</div>`;
       return;
     }
+    container.innerHTML = items.map(resourceItem).join("");
+  }
 
-    grid.innerHTML = data.documents.map((item) => {
-      const hasFile = !!item.file;
-      const tag = hasFile ? "a" : "div";
-      const href = hasFile ? ` href="${escapeHTML(normalizeUrl(item.file))}" target="_blank" rel="noopener"` : "";
-      const status = hasFile ? "تحميل" : "قريبًا";
-      return `<${tag} class="resource-card"${href}>
-        <div>
-          <strong>${escapeHTML(item.title)}</strong>
-          <span>${escapeHTML([item.category, item.year, item.summary].filter(Boolean).join(" — "))}</span>
-        </div>
-        <span class="badge">${status}</span>
-      </${tag}>`;
-    }).join("");
+  function renderGovernance(data) {
+    if (!data || !Array.isArray(data.documents)) return;
+
+    renderCategoryList(data, "#cms-board-documents", "مجلس الإدارة", "لا توجد ملفات لمجلس الإدارة بعد.");
+    renderCategoryList(data, "#cms-assembly-documents", "الجمعية العمومية", "لا توجد ملفات للجمعية العمومية بعد.");
+    renderCategoryList(data, "#cms-policies-documents", "السياسات واللوائح", "لا توجد سياسات أو لوائح مرفوعة بعد.");
+    renderCategoryList(data, "#cms-annual-documents", "التقارير السنوية", "لا توجد تقارير سنوية بعد.");
+    renderCategoryList(data, "#cms-financial-documents", "القوائم المالية", "لا توجد قوائم مالية بعد.");
+    renderCategoryList(data, "#cms-general-documents", "نماذج عامة", "لا توجد نماذج عامة بعد.");
+
+    // Backward compatibility for older layouts: group all files only if no categorized containers exist.
+    const legacyGrid = $("#cms-governance-documents") || $("#reports .grid");
+    if (legacyGrid) {
+      legacyGrid.innerHTML = data.documents.length
+        ? data.documents.map(resourceItem).join("")
+        : `<div class="resource-card"><div><strong>لا توجد ملفات بعد</strong><span>تضاف الملفات من لوحة الإدارة.</span></div><span class="badge">جاهز</span></div>`;
+    }
   }
 
   function renderPartners(data) {

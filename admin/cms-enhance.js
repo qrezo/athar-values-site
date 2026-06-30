@@ -3,7 +3,7 @@
     if (document.querySelector(".athar-cms-helper")) return;
     const helper = document.createElement("div");
     helper.className = "athar-cms-helper";
-    helper.innerHTML = "<strong>أثر القيم</strong><span>حرّر المحتوى ثم اضغط Save / Publish. التحديث يظهر بعد إعادة نشر Netlify.</span>";
+    helper.innerHTML = "<strong>أثر القيم</strong><span>حرّر المحتوى، راجع Preview، ثم اضغط Save / Publish. التحديث يظهر بعد إعادة نشر Netlify.</span>";
     Object.assign(helper.style, {
       position: "fixed",
       bottom: "16px",

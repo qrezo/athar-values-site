@@ -6,6 +6,9 @@ locale: ar
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
+editor:
+  preview: true
+
 collections:
   - name: "site_settings"
     label: "إعدادات عامة"
@@ -78,7 +81,17 @@ collections:
             summary: "{{fields.title}}"
             fields:
               - { label: "العنوان", name: "title", widget: "string" }
-              - { label: "التصنيف", name: "category", widget: "select", options: ["مجلس الإدارة", "الجمعية العمومية", "السياسات واللوائح", "التقارير السنوية", "القوائم المالية", "نماذج عامة"] }
+              - label: "التصنيف"
+                name: "category"
+                widget: "select"
+                hint: "مهم: هذا التصنيف يحدد مكان ظهور الملف في صفحة الحوكمة. اختر السياسات واللوائح إذا كان الملف لائحة أو سياسة."
+                options:
+                  - { label: "مجلس الإدارة", value: "مجلس الإدارة" }
+                  - { label: "الجمعية العمومية", value: "الجمعية العمومية" }
+                  - { label: "السياسات واللوائح", value: "السياسات واللوائح" }
+                  - { label: "التقارير السنوية", value: "التقارير السنوية" }
+                  - { label: "القوائم المالية", value: "القوائم المالية" }
+                  - { label: "نماذج عامة", value: "نماذج عامة" }
               - { label: "الوصف", name: "summary", widget: "text", required: false }
               - { label: "السنة", name: "year", widget: "string", required: false }
               - { label: "الملف", name: "file", widget: "file" }

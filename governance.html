@@ -37,12 +37,57 @@
 <p>صفحة واجهة أمامية لتنظيم ملفات الحوكمة والسياسات والتقارير والقوائم المالية دون رفع ملفات فعلية في هذه المرحلة.</p>
 </div>
 </section>
-<section class="section section--white"><div class="container"><div class="grid grid-3">
-<article class="card" id="board"><div class="card-icon"></div><h3>مجلس الإدارة</h3><p>أعضاء المجلس، المحاضر، والقرارات المعتمدة عند توفرها.</p><span class="badge">قالب جاهز</span></article>
-<article class="card" id="assembly"><div class="card-icon"></div><h3>الجمعية العمومية</h3><p>أعضاء الجمعية العمومية ومحاضر الاجتماعات.</p><span class="badge">قالب جاهز</span></article>
-<article class="card" id="policies"><div class="card-icon"></div><h3>السياسات واللوائح</h3><p>مساحة منظمة لرفع اللوائح والسياسات بعد اعتمادها.</p><span class="badge">قالب جاهز</span></article>
-</div></div></section>
-<section class="section" id="reports"><div class="container"><div class="content-panel"><h2 class="section-title">التقارير والقوائم المالية</h2><p class="section-desc">هذه القائمة ثابتة الآن، وتتحول لاحقًا إلى روابط تحميل بعد رفع ملفات PDF المعتمدة.</p><div class="grid grid-2" id="cms-governance-documents" style="margin-top:24px"><div class="resource-card"><div><strong>التقرير السنوي</strong><span>لم يتم رفع ملف بعد</span></div><span class="badge">قريبًا</span></div><div class="resource-card"><div><strong>القوائم المالية</strong><span>لم يتم رفع ملف بعد</span></div><span class="badge">قريبًا</span></div><div class="resource-card"><div><strong>تقارير الفعاليات</strong><span>لم يتم رفع ملف بعد</span></div><span class="badge">قريبًا</span></div><div class="resource-card"><div><strong>قرارات الاستثمار والتملك</strong><span>لم يتم رفع ملف بعد</span></div><span class="badge">قريبًا</span></div></div></div></div></section>
+<section class="section section--white governance-overview">
+  <div class="container">
+    <div class="section-heading compact">
+      <span class="section-kicker">تنظيم مؤسسي</span>
+      <h2 class="section-title">ملفات الحوكمة حسب التصنيف</h2>
+      <p class="section-desc">كل ملف يظهر في مكانه حسب التصنيف المختار من لوحة الإدارة؛ فلا تختلط السياسات بالتقارير أو القوائم المالية.</p>
+    </div>
+    <div class="grid grid-3 governance-categories">
+      <article class="card governance-category-card" id="board">
+        <div class="card-icon"></div><h3>مجلس الإدارة</h3>
+        <p>أعضاء المجلس، المحاضر، والقرارات المعتمدة عند توفرها.</p>
+        <div class="resource-list mini" id="cms-board-documents"><div class="empty-state">لا توجد ملفات مرفوعة بعد.</div></div>
+      </article>
+      <article class="card governance-category-card" id="assembly">
+        <div class="card-icon"></div><h3>الجمعية العمومية</h3>
+        <p>أعضاء الجمعية العمومية ومحاضر الاجتماعات.</p>
+        <div class="resource-list mini" id="cms-assembly-documents"><div class="empty-state">لا توجد ملفات مرفوعة بعد.</div></div>
+      </article>
+      <article class="card governance-category-card" id="policies">
+        <div class="card-icon"></div><h3>السياسات واللوائح</h3>
+        <p>السياسات، اللوائح، الأدلة التنظيمية، وملفات الامتثال.</p>
+        <div class="resource-list mini" id="cms-policies-documents"><div class="empty-state">لا توجد ملفات مرفوعة بعد.</div></div>
+      </article>
+    </div>
+  </div>
+</section>
+<section class="section governance-reports" id="reports">
+  <div class="container">
+    <div class="content-panel">
+      <div class="section-heading compact">
+        <span class="section-kicker">الشفافية والتقارير</span>
+        <h2 class="section-title">التقارير والقوائم المالية</h2>
+        <p class="section-desc">هذه المنطقة مخصصة للتقارير السنوية والقوائم المالية فقط.</p>
+      </div>
+      <div class="governance-split">
+        <article class="report-column">
+          <h3>التقارير السنوية</h3>
+          <div class="resource-list" id="cms-annual-documents"><div class="empty-state">لا توجد تقارير سنوية بعد.</div></div>
+        </article>
+        <article class="report-column">
+          <h3>القوائم المالية</h3>
+          <div class="resource-list" id="cms-financial-documents"><div class="empty-state">لا توجد قوائم مالية بعد.</div></div>
+        </article>
+      </div>
+      <article class="report-column forms-column" id="forms" style="margin-top:22px">
+        <h3>نماذج عامة</h3>
+        <div class="resource-list" id="cms-general-documents"><div class="empty-state">لا توجد نماذج عامة بعد.</div></div>
+      </article>
+    </div>
+  </div>
+</section>
 </main>
 <footer class="site-footer">
 <div class="container">
