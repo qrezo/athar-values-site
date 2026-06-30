@@ -3,29 +3,144 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>لوحة إدارة المحتوى | جمعية أثر القيم</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
-      background: #FBF8F1;
-    }
-  </style>
+  <title>لوحة إدارة أثر القيم</title>
+  <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="admin-style.css" />
 </head>
-<body>
-  <!-- Netlify Identity must load before Decap CMS so invitation/recovery tokens are handled correctly. -->
+<body class="admin-shell-body">
   <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-  <script>
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", function(user) {
-        if (!user) {
-          window.netlifyIdentity.on("login", function() {
-            document.location.href = "/admin/";
-          });
-        }
-      });
-    }
-  </script>
-  <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+
+  <main id="authView" class="auth-view" aria-label="تسجيل الدخول إلى لوحة الإدارة">
+    <section class="auth-card">
+      <div class="auth-brand">
+        <img src="../assets/images/athar-logo.png" alt="شعار جمعية أثر القيم" />
+        <span>لوحة إدارة المحتوى</span>
+      </div>
+      <h1>إدارة موقع أثر القيم بدون الدخول للكود</h1>
+      <p>أضف الأخبار، الصور، ملفات الحوكمة، والشركاء من واجهة تحرير واحدة مرتبطة بالموقع مباشرة.</p>
+      <div class="auth-actions">
+        <button id="loginButton" class="btn btn-primary" type="button">تسجيل الدخول</button>
+        <a class="btn btn-ghost" href="../" target="_blank" rel="noopener">معاينة الموقع</a>
+      </div>
+      <div class="auth-note">
+        <strong>تنبيه:</strong>
+        استخدم نفس الإيميل الذي وصلت عليه دعوة Netlify. عند قبول الدعوة ستظهر نافذة تعيين كلمة المرور تلقائيًا.
+      </div>
+    </section>
+
+    <aside class="auth-aside" aria-label="مميزات لوحة الإدارة">
+      <div class="mini-stat"><span>01</span><strong>نشر آمن</strong><small>كل تعديل يُحفظ في GitHub ثم يُنشر تلقائيًا.</small></div>
+      <div class="mini-stat"><span>02</span><strong>ملفات وصور</strong><small>رفع PDF وصور الأخبار والشركاء من نفس المكان.</small></div>
+      <div class="mini-stat"><span>03</span><strong>بدون كود</strong><small>مناسبة للمدير وفريق المحتوى.</small></div>
+    </aside>
+  </main>
+
+  <main id="dashboardView" class="dashboard-view is-hidden" aria-label="لوحة إدارة أثر القيم">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../assets/images/athar-logo-white.png" alt="شعار أثر القيم" />
+        <div>
+          <strong>أثر القيم</strong>
+          <span>إدارة المحتوى</span>
+        </div>
+      </div>
+
+      <nav class="admin-nav" aria-label="اختصارات الإدارة">
+        <button class="nav-item is-active" data-route="dashboard" type="button">
+          <span class="nav-icon">⌂</span>
+          <span>نظرة عامة</span>
+        </button>
+        <button class="nav-item" data-cms-route="#/collections/site_settings/entries/site" type="button">
+          <span class="nav-icon">⚙</span>
+          <span>بيانات الجمعية</span>
+        </button>
+        <button class="nav-item" data-cms-route="#/collections/media_center/entries/media" type="button">
+          <span class="nav-icon">◈</span>
+          <span>المركز الإعلامي</span>
+        </button>
+        <button class="nav-item" data-cms-route="#/collections/governance/entries/governance" type="button">
+          <span class="nav-icon">▣</span>
+          <span>الحوكمة والملفات</span>
+        </button>
+        <button class="nav-item" data-cms-route="#/collections/partners/entries/partners" type="button">
+          <span class="nav-icon">◇</span>
+          <span>الشركاء</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="logoutButton" class="logout-button" type="button">تسجيل الخروج</button>
+      </div>
+    </aside>
+
+    <section class="admin-workspace">
+      <header class="admin-topbar">
+        <div>
+          <p class="eyebrow">لوحة تحكم المحتوى</p>
+          <h1 id="workspaceTitle">نظرة عامة</h1>
+        </div>
+        <div class="topbar-actions">
+          <a class="top-link" href="../" target="_blank" rel="noopener">فتح الموقع</a>
+          <button id="openCmsButton" class="btn btn-primary small" type="button">فتح المحرر</button>
+        </div>
+      </header>
+
+      <section id="overviewPanel" class="overview-panel">
+        <div class="hero-panel">
+          <div>
+            <span class="panel-kicker">مرحبًا بك</span>
+            <h2>أدر محتوى الموقع من مكان واحد واضح</h2>
+            <p>ابدأ من البطاقة المناسبة، ثم حرّر البيانات واضغط حفظ. سيتم تحديث GitHub ثم Netlify تلقائيًا.</p>
+          </div>
+          <div class="hero-mark">أثر</div>
+        </div>
+
+        <div class="quick-grid">
+          <button class="quick-card" data-cms-route="#/collections/media_center/entries/media" type="button">
+            <span class="quick-icon">◈</span>
+            <strong>إضافة خبر أو صورة</strong>
+            <small>الأخبار، ألبوم الصور، الملفات الإعلامية.</small>
+          </button>
+          <button class="quick-card" data-cms-route="#/collections/governance/entries/governance" type="button">
+            <span class="quick-icon">▣</span>
+            <strong>رفع ملف حوكمة</strong>
+            <small>تقارير، لوائح، سياسات، قوائم مالية.</small>
+          </button>
+          <button class="quick-card" data-cms-route="#/collections/partners/entries/partners" type="button">
+            <span class="quick-icon">◇</span>
+            <strong>إضافة شريك</strong>
+            <small>اسم الشريك، الشعار، الرابط، والوصف.</small>
+          </button>
+          <button class="quick-card" data-cms-route="#/collections/site_settings/entries/site" type="button">
+            <span class="quick-icon">⚙</span>
+            <strong>تحديث التواصل</strong>
+            <small>الجوال، البريد، المدينة، وصف الجمعية.</small>
+          </button>
+        </div>
+
+        <div class="guide-grid">
+          <article class="guide-card">
+            <h3>طريقة العمل</h3>
+            <ol>
+              <li>اختر القسم المطلوب.</li>
+              <li>عدّل أو أضف المحتوى.</li>
+              <li>اضغط Save ثم Publish.</li>
+              <li>انتظر دقيقة لظهور التحديث على الموقع.</li>
+            </ol>
+          </article>
+          <article class="guide-card soft">
+            <h3>معيار الجودة</h3>
+            <p>ارفع صورًا واضحة، واكتب عناوين قصيرة، ولا تكرر الملفات. المحتوى الجيد يبدأ باسم مفهوم ووصف مختصر.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="cmsPanel" class="cms-panel is-hidden" aria-label="محرر المحتوى">
+        <iframe id="cmsFrame" title="محرر Decap CMS" src="cms.html" loading="lazy"></iframe>
+      </section>
+    </section>
+  </main>
+
+  <script src="admin-shell.js"></script>
 </body>
 </html>
