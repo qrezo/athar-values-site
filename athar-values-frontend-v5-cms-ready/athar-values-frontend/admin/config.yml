@@ -1,0 +1,102 @@
+backend:
+  name: git-gateway
+  branch: main
+
+locale: ar
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "site_settings"
+    label: "إعدادات عامة"
+    files:
+      - name: "site"
+        label: "بيانات الجمعية والتواصل"
+        file: "data/site.json"
+        format: "json"
+        fields:
+          - { label: "اسم الجمعية", name: "name", widget: "string" }
+          - { label: "الوصف المختصر", name: "description", widget: "text", required: false }
+          - { label: "رقم الجوال", name: "phone", widget: "string", required: false }
+          - { label: "البريد الإلكتروني", name: "email", widget: "string", required: false }
+          - { label: "المدينة", name: "city", widget: "string", required: false }
+
+  - name: "media_center"
+    label: "المركز الإعلامي"
+    files:
+      - name: "media"
+        label: "الأخبار والصور والإصدارات"
+        file: "data/media.json"
+        format: "json"
+        fields:
+          - label: "الأخبار"
+            name: "news"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "العنوان", name: "title", widget: "string" }
+              - { label: "الوصف", name: "summary", widget: "text", required: false }
+              - { label: "التاريخ", name: "date", widget: "datetime", required: false }
+              - { label: "الصورة", name: "image", widget: "image", required: false }
+              - { label: "رابط اختياري", name: "link", widget: "string", required: false }
+          - label: "المقالات"
+            name: "articles"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "العنوان", name: "title", widget: "string" }
+              - { label: "الوصف", name: "summary", widget: "text", required: false }
+              - { label: "رابط أو ملف", name: "link", widget: "string", required: false }
+          - label: "ألبوم الصور"
+            name: "gallery"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "العنوان", name: "title", widget: "string" }
+              - { label: "الصورة", name: "image", widget: "image" }
+              - { label: "وصف الصورة", name: "caption", widget: "string", required: false }
+          - label: "ملفات المركز الإعلامي"
+            name: "documents"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "اسم الملف", name: "title", widget: "string" }
+              - { label: "الوصف", name: "summary", widget: "text", required: false }
+              - { label: "الملف", name: "file", widget: "file" }
+
+  - name: "governance"
+    label: "الحوكمة والملفات"
+    files:
+      - name: "governance"
+        label: "ملفات الحوكمة والتقارير"
+        file: "data/governance.json"
+        format: "json"
+        fields:
+          - label: "الملفات"
+            name: "documents"
+            widget: "list"
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "العنوان", name: "title", widget: "string" }
+              - { label: "التصنيف", name: "category", widget: "select", options: ["مجلس الإدارة", "الجمعية العمومية", "السياسات واللوائح", "التقارير السنوية", "القوائم المالية", "نماذج عامة"] }
+              - { label: "الوصف", name: "summary", widget: "text", required: false }
+              - { label: "السنة", name: "year", widget: "string", required: false }
+              - { label: "الملف", name: "file", widget: "file" }
+
+  - name: "partners"
+    label: "الشركاء"
+    files:
+      - name: "partners"
+        label: "قائمة الشركاء"
+        file: "data/partners.json"
+        format: "json"
+        fields:
+          - label: "الشركاء"
+            name: "partners"
+            widget: "list"
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "اسم الشريك", name: "name", widget: "string" }
+              - { label: "الشعار", name: "logo", widget: "image", required: false }
+              - { label: "وصف مختصر", name: "summary", widget: "text", required: false }
+              - { label: "الرابط", name: "url", widget: "string", required: false }
