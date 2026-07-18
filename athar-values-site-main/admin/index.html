@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>لوحة إدارة أثر القيم</title>
+  <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;700;900&family=Noto+Sans+Arabic:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-style.css" />
+</head>
+<body class="admin-shell-body">
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <main id="authView" class="auth-view" aria-label="تسجيل الدخول إلى لوحة الإدارة">
+    <section class="auth-card">
+      <div class="auth-brand">
+        <img src="../assets/images/athar-logo.png" alt="شعار جمعية أثر القيم" />
+        <span>نظام إدارة المحتوى</span>
+      </div>
+      <h1>لوحة أنيقة لإدارة موقع أثر القيم.</h1>
+      <p>واجهة مخصصة لفريق الجمعية: تعديل المحتوى، رفع الملفات، معاينة الموقع، ثم النشر بدون الدخول إلى الكود أو GitHub.</p>
+      <div class="auth-actions">
+        <button id="loginButton" class="btn btn-primary" type="button">تسجيل الدخول</button>
+        <a class="btn btn-ghost" href="../" target="_blank" rel="noopener">معاينة الموقع</a>
+      </div>
+      <div class="auth-note"><strong>تنبيه أمان:</strong> الدخول مخصص للحسابات المدعوة فقط. استخدم الإيميل الذي وصلت عليه دعوة Netlify.</div>
+    </section>
+    <aside class="auth-aside" aria-label="مميزات لوحة الإدارة">
+      <div class="auth-aside__title">مسار تحرير واضح</div>
+      <div class="mini-stat"><span>01</span><strong>اختيار القسم</strong><small>عن الجمعية، البرامج، الأثر، التواصل، الحوكمة، والتقارير المالية.</small></div>
+      <div class="mini-stat"><span>02</span><strong>تحرير ومعاينة</strong><small>تعديل المحتوى مع Preview داخل المحرر وقبل النشر.</small></div>
+      <div class="mini-stat"><span>03</span><strong>نشر تلقائي</strong><small>الحفظ يولّد Commit ثم Netlify يعيد نشر الموقع.</small></div>
+    </aside>
+  </main>
+
+  <main id="dashboardView" class="dashboard-view is-hidden" aria-label="لوحة إدارة أثر القيم">
+    <aside class="admin-sidebar">
+      <div class="sidebar-brand">
+        <img src="../assets/images/athar-logo-white.png" alt="شعار أثر القيم" />
+        <div><strong>أثر القيم</strong><span>لوحة الإدارة</span></div>
+      </div>
+      <nav class="admin-nav" aria-label="اختصارات الإدارة">
+        <button class="nav-item is-active" data-route="dashboard" type="button"><span class="nav-icon">⌂</span><span>النظرة العامة</span></button>
+        <button class="nav-item" data-cms-route="#/collections/site_settings/entries/site" type="button"><span class="nav-icon">⚙</span><span>بيانات التواصل</span></button>
+        <button class="nav-item" data-cms-route="#/collections/about_content/entries/about" type="button"><span class="nav-icon">أ</span><span>عن الجمعية</span></button>
+        <button class="nav-item" data-cms-route="#/collections/program_content/entries/programs" type="button"><span class="nav-icon">◫</span><span>البرامج والأنشطة</span></button>
+        <button class="nav-item" data-cms-route="#/collections/impact_content/entries/impact" type="button"><span class="nav-icon">↗</span><span>الإحصاءات والأثر</span></button>
+        <button class="nav-item" data-cms-route="#/collections/documents/entries/governance" type="button"><span class="nav-icon">▣</span><span>الوثائق والتقارير</span></button>
+        <button class="nav-item" data-preview-url="../index.html" type="button"><span class="nav-icon">◉</span><span>معاينة الموقع</span></button>
+      </nav>
+      <div class="sidebar-tip"><strong>قاعدة مهمة</strong><span>الملف يظهر في الموقع حسب التصنيف المختار داخل الحوكمة.</span></div>
+      <div class="sidebar-footer"><button id="logoutButton" class="logout-button" type="button">تسجيل الخروج</button></div>
+    </aside>
+
+    <section class="admin-workspace">
+      <header class="admin-topbar">
+        <div>
+          <p class="eyebrow">مركز إدارة موقع الجمعية</p>
+          <h1 id="workspaceTitle">النظرة العامة</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="previewSiteButton" class="btn btn-ghost small" type="button">معاينة داخلية</button>
+          <a class="top-link" href="../" target="_blank" rel="noopener">فتح الموقع</a>
+          <button id="openCmsButton" class="btn btn-primary small" type="button">فتح المحرر</button>
+        </div>
+      </header>
+
+      <section id="overviewPanel" class="overview-panel">
+        <div class="hero-panel">
+          <div>
+            <span class="panel-kicker">Content Command Center</span>
+            <h2>كل محتوى الموقع في لوحة واحدة.</h2>
+            <p>اختر الإجراء المطلوب. بعد الحفظ والنشر تظهر التحديثات في Netlify خلال دقيقة تقريبًا. المعاينة متاحة داخل المحرر وداخل لوحة الإدارة.</p>
+          </div>
+          <div class="hero-mark">أثر</div>
+        </div>
+
+        <div class="status-strip" aria-label="خطوات النشر">
+          <div><strong>01</strong><span>تحرير</span></div>
+          <div><strong>02</strong><span>معاينة</span></div>
+          <div><strong>03</strong><span>حفظ</span></div>
+          <div><strong>04</strong><span>نشر</span></div>
+        </div>
+
+        <div class="quick-grid">
+          <button class="quick-card featured" data-cms-route="#/collections/about_content/entries/about" type="button"><span class="quick-icon">أ</span><strong>تحديث عن الجمعية</strong><small>النبذة، الرؤية، الرسالة، الأهداف، الأعضاء، مجلس الإدارة والقيادات.</small></button>
+          <button class="quick-card" data-cms-route="#/collections/program_content/entries/programs" type="button"><span class="quick-icon">◫</span><strong>إضافة برنامج أو نشاط</strong><small>إضافة الوصف والصورة والرابط ثم نشره في صفحة البرامج.</small></button>
+          <button class="quick-card" data-cms-route="#/collections/impact_content/entries/impact" type="button"><span class="quick-icon">↗</span><strong>إضافة إحصاء أو تقرير أثر</strong><small>مؤشرات رقمية وتقارير أثر قابلة للرفع والنشر.</small></button>
+          <button class="quick-card" data-cms-route="#/collections/documents/entries/governance" type="button"><span class="quick-icon">▣</span><strong>رفع الوثائق المعتمدة</strong><small>شهادة الترخيص، السياسات واللوائح، القوائم والتقارير المالية.</small></button>
+          <button class="quick-card" data-cms-route="#/collections/site_settings/entries/site" type="button"><span class="quick-icon">⚙</span><strong>تحديث بيانات التواصل</strong><small>الجوال، البريد، المدينة، ورابط نموذج قوقل.</small></button>
+          <button class="quick-card" data-preview-url="../about.html" type="button"><span class="quick-icon">◉</span><strong>معاينة عن الجمعية</strong><small>شهادة الترخيص والخريطة الاستراتيجية والهيكل المؤسسي.</small></button>
+          <button class="quick-card" data-preview-url="../contact.html" type="button"><span class="quick-icon">✦</span><strong>معاينة التواصل</strong><small>نموذج الاستفسارات والمقترحات والشكاوى وآلية الرد.</small></button>
+        </div>
+
+        <div class="guide-grid">
+          <article class="guide-card">
+            <h3>قبل رفع ملف حوكمة</h3>
+            <ol><li>اكتب اسمًا واضحًا للملف.</li><li>اختر التصنيف الصحيح.</li><li>أضف وصفًا مختصرًا وسنة الملف.</li><li>اضغط Save ثم Publish.</li></ol>
+          </article>
+          <article class="guide-card soft">
+            <h3>إصلاح التصنيف</h3>
+            <p>إذا ظهر ملف في مكان خاطئ، افتح الوثائق والتقارير ثم غيّر خانة <strong>التصنيف</strong>. الموقع الآن يعرض كل ملف في القسم المناسب فقط.</p>
+          </article>
+        </div>
+      </section>
+
+      <section id="cmsPanel" class="cms-panel is-hidden" aria-label="محرر المحتوى">
+        <iframe id="cmsFrame" title="محرر Decap CMS" src="cms.html" loading="lazy"></iframe>
+      </section>
+
+      <section id="previewPanel" class="preview-panel is-hidden" aria-label="معاينة الموقع">
+        <div class="preview-toolbar">
+          <div><strong>معاينة الموقع</strong><span id="previewUrlLabel">الرئيسية</span></div>
+          <div class="preview-actions">
+            <button data-preview-url="../index.html" type="button">الرئيسية</button>
+            <button data-preview-url="../about.html" type="button">عن الجمعية</button>
+            <button data-preview-url="../programs.html" type="button">البرامج</button>
+            <button data-preview-url="../impact.html" type="button">الأثر</button>
+            <button data-preview-url="../governance.html" type="button">الحوكمة</button>
+            <button data-preview-url="../financial-reports.html" type="button">التقارير المالية</button>
+            <button data-preview-url="../contact.html" type="button">التواصل</button>
+          </div>
+        </div>
+        <iframe id="previewFrame" title="معاينة موقع أثر القيم" src="../index.html" loading="lazy"></iframe>
+      </section>
+    </section>
+  </main>
+
+  <script src="admin-shell.js"></script>
+</body>
+</html>
