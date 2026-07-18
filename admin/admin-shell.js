@@ -14,9 +14,7 @@
 
   const titles = {
     "#/collections/site_settings/entries/site": "بيانات الجمعية والتواصل",
-    "#/collections/media_center/entries/media": "المركز الإعلامي",
-    "#/collections/governance/entries/governance": "الحوكمة والملفات",
-    "#/collections/partners/entries/partners": "الشركاء"
+    "#/collections/documents/entries/governance": "الوثائق والتقارير"
   };
 
   function showDashboard() { authView.classList.add("is-hidden"); dashboardView.classList.remove("is-hidden"); }

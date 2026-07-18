@@ -11,7 +11,7 @@ editor:
 
 collections:
   - name: "site_settings"
-    label: "إعدادات عامة"
+    label: "إعدادات الموقع"
     files:
       - name: "site"
         label: "بيانات الجمعية والتواصل"
@@ -23,55 +23,13 @@ collections:
           - { label: "رقم الجوال", name: "phone", widget: "string", required: false }
           - { label: "البريد الإلكتروني", name: "email", widget: "string", required: false }
           - { label: "المدينة", name: "city", widget: "string", required: false }
+          - { label: "رابط نموذج قوقل للشكاوى والمقترحات", name: "feedback_form_url", widget: "string", required: false, hint: "اتركه فارغًا حتى يتم تجهيز نموذج قوقل." }
 
-  - name: "media_center"
-    label: "المركز الإعلامي"
-    files:
-      - name: "media"
-        label: "الأخبار والصور والإصدارات"
-        file: "data/media.json"
-        format: "json"
-        fields:
-          - label: "الأخبار"
-            name: "news"
-            widget: "list"
-            summary: "{{fields.title}}"
-            fields:
-              - { label: "العنوان", name: "title", widget: "string" }
-              - { label: "الوصف", name: "summary", widget: "text", required: false }
-              - { label: "التاريخ", name: "date", widget: "datetime", required: false }
-              - { label: "الصورة", name: "image", widget: "image", required: false }
-              - { label: "رابط اختياري", name: "link", widget: "string", required: false }
-          - label: "المقالات"
-            name: "articles"
-            widget: "list"
-            summary: "{{fields.title}}"
-            fields:
-              - { label: "العنوان", name: "title", widget: "string" }
-              - { label: "الوصف", name: "summary", widget: "text", required: false }
-              - { label: "رابط أو ملف", name: "link", widget: "string", required: false }
-          - label: "ألبوم الصور"
-            name: "gallery"
-            widget: "list"
-            summary: "{{fields.title}}"
-            fields:
-              - { label: "العنوان", name: "title", widget: "string" }
-              - { label: "الصورة", name: "image", widget: "image" }
-              - { label: "وصف الصورة", name: "caption", widget: "string", required: false }
-          - label: "ملفات المركز الإعلامي"
-            name: "documents"
-            widget: "list"
-            summary: "{{fields.title}}"
-            fields:
-              - { label: "اسم الملف", name: "title", widget: "string" }
-              - { label: "الوصف", name: "summary", widget: "text", required: false }
-              - { label: "الملف", name: "file", widget: "file" }
-
-  - name: "governance"
-    label: "الحوكمة والملفات"
+  - name: "documents"
+    label: "الوثائق والتقارير"
     files:
       - name: "governance"
-        label: "ملفات الحوكمة والتقارير"
+        label: "ملفات الموقع"
         file: "data/governance.json"
         format: "json"
         fields:
@@ -84,32 +42,106 @@ collections:
               - label: "التصنيف"
                 name: "category"
                 widget: "select"
-                hint: "مهم: هذا التصنيف يحدد مكان ظهور الملف في صفحة الحوكمة. اختر السياسات واللوائح إذا كان الملف لائحة أو سياسة."
                 options:
-                  - { label: "مجلس الإدارة", value: "مجلس الإدارة" }
-                  - { label: "الجمعية العمومية", value: "الجمعية العمومية" }
+                  - { label: "شهادة الترخيص", value: "شهادة الترخيص" }
                   - { label: "السياسات واللوائح", value: "السياسات واللوائح" }
-                  - { label: "التقارير السنوية", value: "التقارير السنوية" }
+                  - { label: "أدلة ونماذج الحوكمة", value: "أدلة ونماذج الحوكمة" }
+                  - { label: "التقارير المالية السنوية", value: "التقارير المالية السنوية" }
                   - { label: "القوائم المالية", value: "القوائم المالية" }
-                  - { label: "نماذج عامة", value: "نماذج عامة" }
               - { label: "الوصف", name: "summary", widget: "text", required: false }
               - { label: "السنة", name: "year", widget: "string", required: false }
               - { label: "الملف", name: "file", widget: "file" }
 
-  - name: "partners"
-    label: "الشركاء"
+
+  - name: "about_content"
+    label: "عن الجمعية"
     files:
-      - name: "partners"
-        label: "قائمة الشركاء"
-        file: "data/partners.json"
+      - name: "about"
+        label: "التعريف والخريطة والقيادات"
+        file: "data/about.json"
         format: "json"
         fields:
-          - label: "الشركاء"
-            name: "partners"
+          - { label: "نبذة مختصرة عن الجمعية", name: "summary", widget: "text" }
+          - { label: "الرؤية", name: "vision", widget: "text" }
+          - { label: "الرسالة", name: "mission", widget: "text" }
+          - label: "الأهداف الاستراتيجية"
+            name: "goals"
             widget: "list"
-            summary: "{{fields.name}}"
+            required: false
+            field: { label: "الهدف", name: "goal", widget: "string" }
+          - { label: "النطاق الجغرافي", name: "geographic_scope", widget: "string" }
+          - label: "أعضاء الجمعية العمومية"
+            name: "assembly_members"
+            widget: "list"
+            required: false
+            summary: "{{fields.name}} — {{fields.membership_type}}"
             fields:
-              - { label: "اسم الشريك", name: "name", widget: "string" }
-              - { label: "الشعار", name: "logo", widget: "image", required: false }
-              - { label: "وصف مختصر", name: "summary", widget: "text", required: false }
-              - { label: "الرابط", name: "url", widget: "string", required: false }
+              - { label: "اسم العضو", name: "name", widget: "string" }
+              - { label: "نوع العضوية", name: "membership_type", widget: "string" }
+          - label: "أعضاء مجلس الإدارة"
+            name: "board_members"
+            widget: "list"
+            required: false
+            summary: "{{fields.name}} — {{fields.position}}"
+            fields:
+              - { label: "الاسم", name: "name", widget: "string" }
+              - { label: "المنصب", name: "position", widget: "string", required: false }
+          - label: "الإدارة التنفيذية والقيادات"
+            name: "executive_members"
+            widget: "list"
+            required: false
+            summary: "{{fields.name}} — {{fields.position}}"
+            fields:
+              - { label: "الاسم", name: "name", widget: "string" }
+              - { label: "المسمى الوظيفي", name: "position", widget: "string" }
+              - { label: "البريد الإلكتروني", name: "email", widget: "string", required: false }
+              - { label: "رقم التواصل", name: "phone", widget: "string", required: false }
+
+  - name: "program_content"
+    label: "البرامج والأنشطة"
+    files:
+      - name: "programs"
+        label: "إدارة البرامج والأنشطة"
+        file: "data/programs.json"
+        format: "json"
+        fields:
+          - label: "البرامج والأنشطة"
+            name: "programs"
+            widget: "list"
+            required: false
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "اسم البرنامج أو النشاط", name: "title", widget: "string" }
+              - { label: "التصنيف", name: "category", widget: "string", required: false }
+              - { label: "وصف مختصر", name: "summary", widget: "text" }
+              - { label: "الحالة أو التاريخ", name: "meta", widget: "string", required: false }
+              - { label: "صورة", name: "image", widget: "image", required: false }
+              - { label: "رابط التفاصيل أو التسجيل", name: "url", widget: "string", required: false }
+
+  - name: "impact_content"
+    label: "الإحصاءات والأثر"
+    files:
+      - name: "impact"
+        label: "المؤشرات وتقارير الأثر"
+        file: "data/impact.json"
+        format: "json"
+        fields:
+          - label: "المؤشرات الإحصائية"
+            name: "statistics"
+            widget: "list"
+            required: false
+            summary: "{{fields.label}} — {{fields.value}}"
+            fields:
+              - { label: "اسم المؤشر", name: "label", widget: "string" }
+              - { label: "القيمة", name: "value", widget: "string" }
+              - { label: "وصف مختصر", name: "summary", widget: "string", required: false }
+          - label: "تقارير الأثر"
+            name: "reports"
+            widget: "list"
+            required: false
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "عنوان التقرير", name: "title", widget: "string" }
+              - { label: "السنة", name: "year", widget: "string", required: false }
+              - { label: "وصف", name: "summary", widget: "text", required: false }
+              - { label: "الملف", name: "file", widget: "file" }
