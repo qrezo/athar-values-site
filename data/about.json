@@ -4,7 +4,13 @@
   "mission": "صناعة الأثر التربوي من خلال تسهيل التربية وتعميقها، وبناء برامج تأصيلية ونماذج عملية ومعايير جودة تنطلق من الواقع التربوي واحتياجاته.",
   "goals": [],
   "geographic_scope": "منطقة مكة المكرمة، وفق بيانات الجمعية وهويتها الرسمية.",
-  "assembly_members": [],
+  "assembly_members": [
+    {
+      "id": "member-1784372995247-ux1utq",
+      "name": "Rayan Alzibali",
+      "membership_type": "عضو مؤسس"
+    }
+  ],
   "board_members": [],
   "executive_members": []
 }
