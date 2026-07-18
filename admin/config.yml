@@ -21,6 +21,7 @@ collections:
           - { label: "اسم الجمعية", name: "name", widget: "string" }
           - { label: "الوصف المختصر", name: "description", widget: "text", required: false }
           - { label: "رقم الجوال", name: "phone", widget: "string", required: false }
+          - { label: "رقم واتساب", name: "whatsapp", widget: "string", required: false }
           - { label: "البريد الإلكتروني", name: "email", widget: "string", required: false }
           - { label: "المدينة", name: "city", widget: "string", required: false }
           - { label: "رابط نموذج قوقل للشكاوى والمقترحات", name: "feedback_form_url", widget: "string", required: false, hint: "اتركه فارغًا حتى يتم تجهيز نموذج قوقل." }

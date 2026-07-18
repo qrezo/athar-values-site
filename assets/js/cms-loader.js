@@ -37,14 +37,18 @@
       el.setAttribute('dir', 'ltr');
       if (el.tagName === 'A') el.href = phoneHref(site.phone);
     });
+    setText('[data-cms-site-name]', site.name);
+    setText('[data-cms-site-description]', site.description);
+    setText('[data-cms-city]', site.city);
     $$('[data-cms-whatsapp]').forEach((el) => {
-      if (!site.phone) return;
+      const whatsapp = site.whatsapp || site.phone;
+      if (!whatsapp) return;
       const strong = $('strong', el);
       if (strong) {
-        strong.innerHTML = `<bdi>${escapeHTML(site.phone)}</bdi>`;
+        strong.innerHTML = `<bdi>${escapeHTML(whatsapp)}</bdi>`;
         strong.setAttribute('dir', 'ltr');
       }
-      el.href = whatsappHref(site.phone);
+      el.href = whatsappHref(whatsapp);
       el.target = '_blank';
       el.rel = 'noopener';
     });
@@ -131,15 +135,26 @@
     renderCategory(data, '#cms-annual-documents', ['التقارير المالية السنوية', 'التقارير السنوية'], 'لا توجد تقارير مالية سنوية منشورة بعد.');
   }
 
-  function renderPrograms(data) {
-    const section = $('#cms-programs-content');
-    if (!section || !data || !Array.isArray(data.programs) || !data.programs.length) return;
-    section.className = 'content-section programs-live-section';
-    section.innerHTML = `<div class="container"><div class="section-heading"><span class="eyebrow">البرامج المنشورة</span><h2>برامج وأنشطة الجمعية</h2></div><div class="program-grid">${data.programs.map((item, index) => {
+  function programCards(items) {
+    return items.map((item, index) => {
       const image = item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : `<div class="program-no-image">${String(index + 1).padStart(2, '0')}</div>`;
       const body = `<div class="program-card-body">${item.category ? `<span>${escapeHTML(item.category)}</span>` : ''}<h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary)}</p>${item.meta ? `<small>${escapeHTML(item.meta)}</small>` : ''}</div>`;
       return item.url ? `<a class="program-card" href="${escapeHTML(item.url)}" target="_blank" rel="noopener">${image}${body}</a>` : `<article class="program-card">${image}${body}</article>`;
-    }).join('')}</div></div>`;
+    }).join('');
+  }
+
+  function renderPrograms(data) {
+    if (!data || !Array.isArray(data.programs) || !data.programs.length) return;
+    const section = $('#cms-programs-content');
+    if (section) {
+      section.className = 'content-section programs-live-section';
+      section.innerHTML = `<div class="container"><div class="section-heading"><span class="eyebrow">البرامج المنشورة</span><h2>برامج وأنشطة الجمعية</h2></div><div class="program-grid">${programCards(data.programs)}</div></div>`;
+    }
+    const home = $('#cms-home-programs');
+    if (home) {
+      home.hidden = false;
+      home.innerHTML = `<div class="container"><div class="section-heading"><span class="eyebrow">آخر البرامج والأنشطة</span><h2>أحدث ما أضافته الجمعية</h2></div><div class="program-grid">${programCards(data.programs.slice().reverse().slice(0, 3))}</div><div style="margin-top:28px"><a class="button button--navy" href="programs.html">عرض جميع الأنشطة</a></div></div>`;
+    }
   }
 
   function renderImpact(data) {
@@ -154,7 +169,7 @@
     section.innerHTML = `<div class="container"><div class="section-heading"><span class="eyebrow">نتائج قابلة للقياس</span><h2>الإحصاءات والأثر</h2></div>${statsHTML}${reportsHTML}</div>`;
   }
 
-  document.addEventListener('DOMContentLoaded', async () => {
+  async function initCMSContent() {
     const [site, documents, about, programs, impact] = await Promise.all([
       getJSON('data/site.json'),
       getJSON('data/governance.json'),
@@ -167,5 +182,8 @@
     renderAbout(about);
     renderPrograms(programs);
     renderImpact(impact);
-  });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCMSContent);
+  else initCMSContent();
 })();

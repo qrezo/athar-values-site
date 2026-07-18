@@ -41,17 +41,33 @@
     });
   });
 
+  const closeMobileMenu = () => {
+    body.classList.remove('menu-open');
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', 'false');
+      toggle.setAttribute('aria-label', 'فتح القائمة');
+    }
+    dropdowns.forEach((item) => {
+      item.classList.remove('open');
+      const button = item.querySelector('.dropdown-toggle');
+      if (button) button.setAttribute('aria-expanded', 'false');
+    });
+  };
+
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
-    body.classList.remove('menu-open');
-    if (toggle) toggle.setAttribute('aria-expanded', 'false');
-    dropdowns.forEach((item) => item.classList.remove('open'));
+    closeMobileMenu();
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1180 && body.classList.contains('menu-open')) {
+      closeMobileMenu();
+    }
   });
 
   document.querySelectorAll('.main-nav a').forEach((link) => {
     link.addEventListener('click', () => {
-      body.classList.remove('menu-open');
-      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      closeMobileMenu();
     });
   });
 
