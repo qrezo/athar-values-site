@@ -24,7 +24,6 @@ collections:
           - { label: "رقم واتساب", name: "whatsapp", widget: "string", required: false }
           - { label: "البريد الإلكتروني", name: "email", widget: "string", required: false }
           - { label: "المدينة", name: "city", widget: "string", required: false }
-          - { label: "رابط نموذج قوقل للشكاوى والمقترحات", name: "feedback_form_url", widget: "string", required: false, hint: "اتركه فارغًا حتى يتم تجهيز نموذج قوقل." }
 
   - name: "documents"
     label: "الوثائق والتقارير"
@@ -71,6 +70,7 @@ collections:
             required: false
             field: { label: "الهدف", name: "goal", widget: "string" }
           - { label: "النطاق الجغرافي", name: "geographic_scope", widget: "string" }
+          - { label: "صورة الهيكل التنظيمي", name: "organization_chart", widget: "image", required: false }
           - label: "أعضاء الجمعية العمومية"
             name: "assembly_members"
             widget: "list"
@@ -114,10 +114,20 @@ collections:
             fields:
               - { label: "اسم البرنامج أو النشاط", name: "title", widget: "string" }
               - { label: "التصنيف", name: "category", widget: "string", required: false }
-              - { label: "وصف مختصر", name: "summary", widget: "text" }
-              - { label: "الحالة أو التاريخ", name: "meta", widget: "string", required: false }
+              - { label: "وصف مختصر للبطاقة", name: "summary", widget: "text" }
+              - { label: "الشرح الكامل للبرنامج", name: "details", widget: "text", required: false, hint: "يظهر داخل صفحة تفاصيل البرنامج." }
+              - label: "أهداف البرنامج"
+                name: "objectives"
+                widget: "list"
+                required: false
+                field: { label: "الهدف", name: "objective", widget: "string" }
+              - { label: "الفئة المستهدفة", name: "audience", widget: "string", required: false }
+              - { label: "المدة", name: "duration", widget: "string", required: false }
+              - { label: "الموقع", name: "location", widget: "string", required: false }
+              - { label: "الحالة", name: "status", widget: "select", options: ["منشور", "قادم", "مكتمل", "مسودة"], required: false }
+              - { label: "التاريخ أو الحالة المختصرة", name: "meta", widget: "string", required: false }
               - { label: "صورة", name: "image", widget: "image", required: false }
-              - { label: "رابط التفاصيل أو التسجيل", name: "url", widget: "string", required: false }
+              - { label: "رابط التسجيل الخارجي", name: "url", widget: "string", required: false }
 
   - name: "impact_content"
     label: "الإحصاءات والأثر"
@@ -146,3 +156,62 @@ collections:
               - { label: "السنة", name: "year", widget: "string", required: false }
               - { label: "وصف", name: "summary", widget: "text", required: false }
               - { label: "الملف", name: "file", widget: "file" }
+
+  - name: "media_content"
+    label: "المركز الإعلامي"
+    files:
+      - name: "media"
+        label: "الأخبار والصور والملفات"
+        file: "data/media.json"
+        format: "json"
+        fields:
+          - label: "الأخبار"
+            name: "news"
+            widget: "list"
+            required: false
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "عنوان الخبر", name: "title", widget: "string" }
+              - { label: "الملخص", name: "summary", widget: "text", required: false }
+              - { label: "نص الخبر الكامل", name: "content", widget: "text", required: false, hint: "يظهر في صفحة تفاصيل الخبر." }
+              - { label: "التاريخ", name: "date", widget: "datetime", time_format: false, required: false }
+              - { label: "الصورة", name: "image", widget: "image", required: false }
+              - { label: "الرابط", name: "link", widget: "string", required: false }
+          - label: "ألبوم الصور"
+            name: "gallery"
+            widget: "list"
+            required: false
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "العنوان", name: "title", widget: "string", required: false }
+              - { label: "الوصف", name: "caption", widget: "text", required: false }
+              - { label: "الصورة", name: "image", widget: "image" }
+          - label: "الملفات الإعلامية"
+            name: "documents"
+            widget: "list"
+            required: false
+            summary: "{{fields.title}}"
+            fields:
+              - { label: "عنوان الملف", name: "title", widget: "string" }
+              - { label: "السنة", name: "year", widget: "string", required: false }
+              - { label: "الوصف", name: "summary", widget: "text", required: false }
+              - { label: "الملف", name: "file", widget: "file" }
+
+  - name: "partner_content"
+    label: "الشركاء"
+    files:
+      - name: "partners"
+        label: "الجهات الشريكة"
+        file: "data/partners.json"
+        format: "json"
+        fields:
+          - label: "الشركاء"
+            name: "partners"
+            widget: "list"
+            required: false
+            summary: "{{fields.name}}"
+            fields:
+              - { label: "اسم الجهة", name: "name", widget: "string" }
+              - { label: "وصف مختصر", name: "summary", widget: "text", required: false }
+              - { label: "الشعار", name: "logo", widget: "image", required: false }
+              - { label: "رابط الموقع", name: "url", widget: "string", required: false }

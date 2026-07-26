@@ -26,8 +26,7 @@
       h("div", { className: "preview-grid" },
         h("article", { className: "preview-card" }, h("h3", null, "الجوال"), h("p", null, text(d.phone, "لم يحدد"))),
         h("article", { className: "preview-card" }, h("h3", null, "البريد"), h("p", null, text(d.email, "لم يحدد"))),
-        h("article", { className: "preview-card" }, h("h3", null, "المدينة"), h("p", null, text(d.city, "لم تحدد"))),
-        h("article", { className: "preview-card" }, h("h3", null, "نموذج قوقل"), h("p", null, text(d.feedback_form_url, "غير مضاف حاليًا")))
+        h("article", { className: "preview-card" }, h("h3", null, "المدينة"), h("p", null, text(d.city, "لم تحدد")))
       )
     );
   });

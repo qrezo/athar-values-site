@@ -5,7 +5,39 @@
       "category": "شهادة الترخيص",
       "summary": "الشهادة الرسمية المعتمدة",
       "year": "2026",
-      "file": "/assets/uploads/license-certificate.pdf"
+      "file": "assets/uploads/license-certificate.pdf"
+    },
+    {
+      "title": "سياسة تجريبية للمعاينة",
+      "category": "السياسات واللوائح",
+      "summary": "ملف تجريبي يوضح طريقة عرض السياسات - يُستبدل بالنسخة المعتمدة",
+      "year": "2026",
+      "file": "assets/uploads/demo/demo-policy.pdf",
+      "demo": true
+    },
+    {
+      "title": "دليل حوكمة تجريبي",
+      "category": "أدلة ونماذج الحوكمة",
+      "summary": "ملف تجريبي يوضح طريقة عرض الأدلة والنماذج",
+      "year": "2026",
+      "file": "assets/uploads/demo/demo-governance-guide.pdf",
+      "demo": true
+    },
+    {
+      "title": "قائمة مالية تجريبية",
+      "category": "القوائم المالية",
+      "summary": "ملف تجريبي للمعاينة - ليس قائمة مالية معتمدة",
+      "year": "2026",
+      "file": "assets/uploads/demo/demo-financial-statements.pdf",
+      "demo": true
+    },
+    {
+      "title": "تقرير مالي سنوي تجريبي",
+      "category": "التقارير المالية السنوية",
+      "summary": "ملف تجريبي للمعاينة - يُستبدل بالتقرير المعتمد",
+      "year": "2026",
+      "file": "assets/uploads/demo/demo-annual-financial-report.pdf",
+      "demo": true
     }
   ]
 }

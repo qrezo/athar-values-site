@@ -23,10 +23,9 @@
       whatsapp: '+966 55 719 5594',
       email: 'info@atharq.org',
       city: 'جدة - منطقة مكة المكرمة',
-      feedback_form_url: ''
     },
     about: {
-      summary: '', vision: '', mission: '', goals: [], geographic_scope: '',
+      summary: '', vision: '', mission: '', goals: [], geographic_scope: '', organization_chart: '',
       assembly_members: [], board_members: [], executive_members: []
     },
     programs: { programs: [] },
@@ -54,14 +53,14 @@
   const pageMeta = {
     dashboard: ['الرئيسية', 'مركز إدارة موقع الجمعية'],
     site: ['بيانات الجمعية', 'التعريف والخريطة الاستراتيجية'],
-    programs: ['البرامج والأنشطة', 'إدارة الأنشطة المنشورة'],
+    programs: ['البرامج والمبادرات', 'إدارة البرامج والمبادرات المنشورة'],
     organization: ['الأعضاء والقيادات', 'الجمعية العمومية ومجلس الإدارة والتنفيذيون'],
     impact: ['الإحصاءات والأثر', 'المؤشرات وتقارير الأثر'],
     governance: ['الحوكمة واللوائح', 'السياسات والأدلة والوثائق'],
     financial: ['التقارير المالية', 'القوائم والتقارير المالية السنوية'],
     media: ['الأخبار والصور', 'المركز الإعلامي'],
     partners: ['الشركاء', 'الجهات الشريكة والداعمة'],
-    contact: ['التواصل والشكاوى', 'الهاتف والبريد ونموذج الاستقبال']
+    contact: ['بيانات التواصل', 'واتساب والبريد الإلكتروني']
   };
 
   function clone(value) { return JSON.parse(JSON.stringify(value)); }
@@ -347,7 +346,7 @@
           <button class="quick-action" data-action="new-document" type="button"><span>▤</span><div><strong>رفع سياسة أو لائحة</strong><small>رفع PDF وتصنيفه في الحوكمة.</small></div></button>
           <button class="quick-action" data-action="new-stat" type="button"><span>↗</span><div><strong>إضافة إحصائية</strong><small>عدد المستفيدين أو ساعات التطوع.</small></div></button>
           <button class="quick-action" data-action="new-member" data-member-type="board" type="button"><span>◎</span><div><strong>إضافة عضو مجلس</strong><small>الاسم والمنصب وبيانات التواصل.</small></div></button>
-          <button class="quick-action" data-page="contact" type="button"><span>☎</span><div><strong>تحديث التواصل</strong><small>الجوال والبريد ورابط الاستبيان.</small></div></button>
+          <button class="quick-action" data-page="contact" type="button"><span>☎</span><div><strong>تحديث التواصل</strong><small>الجوال وواتساب والبريد.</small></div></button>
         </div></div></article>
         <article class="panel"><header class="panel-head"><div><h2>آخر الأنشطة</h2><p>الوصول السريع للتعديل</p></div><button class="filter-chip" data-page="programs" type="button">عرض الكل</button></header><div class="panel-body">
           ${recent.length ? `<div class="activity-list">${recent.map((item) => `<div class="activity-row"><div class="thumb">${item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : 'أثر'}</div><div><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.category || item.meta || 'نشاط')}</small></div><button data-action="edit-program" data-id="${escapeHTML(item.id || '')}" data-index="${programs.indexOf(item)}" type="button">تعديل</button></div>`).join('')}</div>` : `<div class="empty-box"><strong>لا توجد أنشطة بعد</strong><span>ابدأ بإضافة أول نشاط للجمعية.</span></div>`}
@@ -376,6 +375,7 @@
           <label class="field full"><span>الرؤية</span><textarea name="vision">${escapeHTML(about.vision)}</textarea></label>
           <label class="field full"><span>الرسالة</span><textarea name="mission">${escapeHTML(about.mission)}</textarea></label>
           <label class="field full"><span>النطاق الجغرافي</span><input name="geographic_scope" value="${valueAttr(about.geographic_scope)}"></label>
+          ${uploadControl('organization_chart', about.organization_chart, 'صورة الهيكل التنظيمي', 'image/*')}
         </div></section>
         <section class="form-section"><div class="form-section-head"><b>03</b><div><h3>الأهداف الاستراتيجية</h3><p>أضف هدفًا في كل سطر.</p></div></div><div id="goalsEditor" class="goals-editor">${goalRows()}<button class="add-row-button" data-action="add-goal" type="button">＋ إضافة هدف</button></div></section>
       </form>
@@ -394,7 +394,7 @@
       return matchesSearch && matchesFilter;
     });
     const categories = programCategories();
-    return `${pageHead('البرامج والأنشطة', 'أضف عددًا غير محدود من الأنشطة وابحث عنها وعدّلها بسهولة.', `<button class="button button-primary" data-action="new-program" type="button">＋ إضافة نشاط جديد</button>`)}
+    return `${pageHead('البرامج والمبادرات', 'أضف البرامج والمبادرات وابحث عنها وعدّلها بسهولة.', `<button class="button button-primary" data-action="new-program" type="button">＋ إضافة نشاط جديد</button>`)}
       <div class="toolbar"><label class="search-box"><span>⌕</span><input id="programSearch" type="search" placeholder="ابحث باسم النشاط أو التصنيف" value="${valueAttr(state.programSearch)}"></label><div class="filter-group">${categories.map((category) => `<button class="filter-chip ${state.programFilter === category ? 'is-active' : ''}" data-action="filter-programs" data-value="${escapeHTML(category)}" type="button">${escapeHTML(category)}</button>`).join('')}</div></div>
       ${items.length ? `<div class="item-grid">${items.map((item) => {
         const index = all.indexOf(item);
@@ -441,9 +441,10 @@
   function renderMedia() {
     const news = state.data.media.news;
     const gallery = state.data.media.gallery;
-    return `${pageHead('الأخبار والصور', 'إدارة الأخبار المنشورة وألبوم صور الجمعية.', `<button class="button button-primary" data-action="new-news" type="button">＋ إضافة خبر</button><button class="button button-plain" data-action="new-gallery" type="button">إضافة صورة</button>`)}
+    return `${pageHead('الأخبار والصور', 'إدارة الأخبار المنشورة وألبوم الصور والملفات الإعلامية.', `<button class="button button-primary" data-action="new-news" type="button">＋ إضافة خبر</button><button class="button button-plain" data-action="new-gallery" type="button">إضافة صورة</button><button class="button button-plain" data-action="new-media-document" type="button">رفع ملف إعلامي</button>`)}
       <section class="panel" style="margin-bottom:18px"><header class="panel-head"><div><h2>الأخبار</h2><p>${news.length} خبر</p></div></header><div class="panel-body">${news.length ? `<div class="item-grid">${news.map((item, index) => `<article class="item-card"><div class="item-card-media">${item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : 'خبر'}</div><div class="item-card-body"><div class="item-card-meta"><span class="badge">${escapeHTML(formatDate(item.date))}</span></div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || '')}</p></div><div class="item-card-actions"><button data-action="edit-news" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-news" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>لا توجد أخبار</strong><span>أضف أول خبر للجمعية.</span></div>`}</div></section>
-      <section class="panel"><header class="panel-head"><div><h2>ألبوم الصور</h2><p>${gallery.length} صورة</p></div></header><div class="panel-body">${gallery.length ? `<div class="item-grid">${gallery.map((item, index) => `<article class="item-card"><div class="item-card-media">${item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : 'صورة'}</div><div class="item-card-body"><h3>${escapeHTML(item.title || item.caption || 'صورة')}</h3><p>${escapeHTML(item.caption || '')}</p></div><div class="item-card-actions"><button data-action="edit-gallery" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-gallery" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>ألبوم الصور فارغ</strong><span>أضف الصور المعتمدة.</span></div>`}</div></section>`;
+      <section class="panel" style="margin-bottom:18px"><header class="panel-head"><div><h2>ألبوم الصور</h2><p>${gallery.length} صورة</p></div></header><div class="panel-body">${gallery.length ? `<div class="item-grid">${gallery.map((item, index) => `<article class="item-card"><div class="item-card-media">${item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : 'صورة'}</div><div class="item-card-body"><h3>${escapeHTML(item.title || item.caption || 'صورة')}</h3><p>${escapeHTML(item.caption || '')}</p></div><div class="item-card-actions"><button data-action="edit-gallery" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-gallery" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>ألبوم الصور فارغ</strong><span>أضف الصور المعتمدة.</span></div>`}</div></section>
+      <section class="panel"><header class="panel-head"><div><h2>الملفات الإعلامية</h2><p>${state.data.media.documents.length} ملف</p></div></header><div class="panel-body">${state.data.media.documents.length ? `<div class="list-panel">${state.data.media.documents.map((item, index) => documentRow(item, index, 'media-document')).join('')}</div>` : `<div class="empty-box"><strong>لا توجد ملفات إعلامية</strong><span>ارفع ملف PDF عند الحاجة.</span></div>`}</div></section>`;
   }
 
   function renderPartners() {
@@ -454,14 +455,14 @@
 
   function renderContact() {
     const site = state.data.site;
-    return `${pageHead('التواصل والشكاوى والمقترحات', 'حدّث بيانات التواصل والرابط الخارجي للنموذج.')}
-      <form id="contactForm" class="form-panel"><section class="form-section"><div class="form-section-head"><b>01</b><div><h3>بيانات التواصل</h3><p>تظهر في الصفحة والتذييل.</p></div></div><div class="form-grid">
+    return `${pageHead('بيانات التواصل', 'حدّث قنوات التواصل المباشر الظاهرة في الموقع.')}
+      <form id="contactForm" class="form-panel"><section class="form-section"><div class="form-section-head"><b>01</b><div><h3>واتساب والبريد</h3><p>لا يوجد نموذج داخلي؛ الأزرار تفتح القنوات مباشرة.</p></div></div><div class="form-grid">
         <label class="field"><span>رقم الجوال</span><input name="phone" dir="ltr" value="${valueAttr(site.phone)}"><small>مثال: +966 55 719 5594</small></label>
         <label class="field"><span>رقم واتساب</span><input name="whatsapp" dir="ltr" value="${valueAttr(site.whatsapp || site.phone)}"></label>
         <label class="field"><span>البريد الإلكتروني</span><input name="email" dir="ltr" type="email" value="${valueAttr(site.email)}"></label>
         <label class="field"><span>المدينة / الموقع</span><input name="city" value="${valueAttr(site.city)}"></label>
-      </div></section><section class="form-section"><div class="form-section-head"><b>02</b><div><h3>الشكاوى والمقترحات</h3><p>يمكن ربط زر الموقع بنموذج Google Forms.</p></div></div><div class="form-grid"><label class="field full"><span>رابط نموذج Google Forms</span><input name="feedback_form_url" dir="ltr" type="url" value="${valueAttr(site.feedback_form_url)}" placeholder="https://forms.gle/..."><small>اتركه فارغًا إذا لم يتم تجهيز النموذج بعد.</small></label></div></section></form>
-      <div class="sticky-save"><div class="sticky-save-inner"><span class="unsaved-note">تأكد من صحة الرقم والرابط قبل النشر.</span><button class="button button-primary" data-action="save-contact" type="button">حفظ بيانات التواصل</button></div></div>`;
+      </div></section></form>
+      <div class="sticky-save"><div class="sticky-save-inner"><span class="unsaved-note">تأكد من صحة رقم واتساب والبريد قبل النشر.</span><button class="button button-primary" data-action="save-contact" type="button">حفظ بيانات التواصل</button></div></div>`;
   }
 
   function field(label, name, value = '', options = {}) {
@@ -502,13 +503,16 @@
       const item = index === null ? {} : state.data.programs.programs[index] || {};
       return { eyebrow: index === null ? 'برنامج جديد' : 'تعديل البرنامج', title: index === null ? 'إضافة نشاط جديد' : item.title, html:
         field('اسم البرنامج أو النشاط', 'title', item.title, { required: true, full: true }) +
-        field('التصنيف', 'category', item.category || 'برامج عامة', { type: 'select', values: ['برامج عامة', 'برامج المربي', 'برامج المتربي', 'برامج الأسرة', 'المبادرات الرقمية', 'فعاليات ومناسبات'] }) +
+        field('التصنيف', 'category', item.category || 'برامج قيمية', { type: 'select', values: ['برامج قيمية', 'برامج الممارسين القيميين', 'برامج الناشئة والشباب', 'برامج الأسرة', 'المبادرات الرقمية', 'فعاليات ومناسبات'] }) +
         field('حالة النشر', 'status', item.status || 'منشور', { type: 'select', values: ['منشور', 'مسودة', 'مكتمل', 'قادم'] }) +
-        field('وصف مختصر', 'summary', item.summary, { type: 'textarea', full: true, required: true }) +
+        field('وصف مختصر للبطاقة', 'summary', item.summary, { type: 'textarea', full: true, required: true }) +
+        field('الشرح الكامل للبرنامج', 'details', item.details || item.description, { type: 'textarea', full: true, hint: 'يظهر داخل صفحة تفاصيل البرنامج.' }) +
+        field('أهداف البرنامج', 'objectives', Array.isArray(item.objectives) ? item.objectives.join('\n') : item.objectives, { type: 'textarea', full: true, hint: 'اكتب كل هدف في سطر مستقل.' }) +
         field('التاريخ أو الحالة المختصرة', 'meta', item.meta || item.date, { hint: 'مثال: 15 محرم 1448هـ أو التسجيل مفتوح' }) +
+        field('المدة', 'duration', item.duration) +
         field('الموقع', 'location', item.location) +
         field('الفئة المستهدفة', 'audience', item.audience) +
-        field('رابط التفاصيل أو التسجيل', 'url', item.url, { type: 'url', dir: 'ltr' }) +
+        field('رابط التسجيل الخارجي', 'url', item.url, { type: 'url', dir: 'ltr' }) +
         uploadControl('image', item.image, 'صورة النشاط', 'image/*') };
     }
     if (type === 'member') {
@@ -540,12 +544,17 @@
     if (type === 'news') {
       const item = index === null ? {} : state.data.media.news[index] || {};
       return { eyebrow: 'المركز الإعلامي', title: index === null ? 'إضافة خبر' : 'تعديل الخبر', html:
-        field('عنوان الخبر', 'title', item.title, { required: true, full: true }) + field('تاريخ النشر', 'date', item.date ? String(item.date).slice(0,10) : '', { type: 'date' }) + field('رابط اختياري', 'link', item.link, { type: 'url', dir: 'ltr' }) + field('ملخص الخبر', 'summary', item.summary, { type: 'textarea', full: true }) + uploadControl('image', item.image, 'صورة الخبر', 'image/*') };
+        field('عنوان الخبر', 'title', item.title, { required: true, full: true }) + field('تاريخ النشر', 'date', item.date ? String(item.date).slice(0,10) : '', { type: 'date' }) + field('رابط اختياري', 'link', item.link, { type: 'url', dir: 'ltr' }) + field('ملخص الخبر', 'summary', item.summary, { type: 'textarea', full: true }) + field('نص الخبر الكامل', 'content', item.content, { type: 'textarea', full: true, hint: 'يظهر داخل صفحة تفاصيل الخبر.' }) + uploadControl('image', item.image, 'صورة الخبر', 'image/*') };
     }
     if (type === 'gallery') {
       const item = index === null ? {} : state.data.media.gallery[index] || {};
       return { eyebrow: 'ألبوم الصور', title: index === null ? 'إضافة صورة' : 'تعديل الصورة', html:
         field('عنوان الصورة', 'title', item.title, { full: true }) + field('وصف الصورة', 'caption', item.caption, { type: 'textarea', full: true }) + uploadControl('image', item.image, 'الصورة', 'image/*') };
+    }
+    if (type === 'media-document') {
+      const item = index === null ? {} : state.data.media.documents[index] || {};
+      return { eyebrow: 'الملفات الإعلامية', title: index === null ? 'رفع ملف إعلامي' : 'تعديل الملف الإعلامي', html:
+        field('عنوان الملف', 'title', item.title, { required: true, full: true }) + field('السنة', 'year', item.year) + field('الوصف', 'summary', item.summary, { type: 'textarea', full: true }) + uploadControl('file', item.file, 'الملف PDF', '.pdf,application/pdf') };
     }
     if (type === 'partner') {
       const item = index === null ? {} : state.data.partners.partners[index] || {};
@@ -565,7 +574,7 @@
     setBusy(button, true);
     try {
       const values = formObject(form);
-      if ((context.type === 'document' || context.type === 'impact-report') && !values.file) {
+      if ((context.type === 'document' || context.type === 'impact-report' || context.type === 'media-document') && !values.file) {
         toast('الملف مطلوب', 'اختر ملف PDF ثم انتظر اكتمال الرفع قبل الحفظ.', 'error');
         setBusy(button, false);
         return;
@@ -576,6 +585,7 @@
         return;
       }
       if (context.type === 'program') {
+        values.objectives = String(values.objectives || '').split(/\n/).map((value) => value.trim()).filter(Boolean);
         const item = Object.assign({}, context.index === null ? { id: uid('program') } : state.data.programs.programs[context.index], values);
         if (context.index === null) state.data.programs.programs.push(item); else state.data.programs.programs[context.index] = item;
         await writeRepoJSON('programs', state.data.programs, context.index === null ? `إضافة نشاط: ${item.title}` : `تحديث نشاط: ${item.title}`);
@@ -610,6 +620,11 @@
         const item = Object.assign({}, context.index === null ? { id: uid('image') } : list[context.index], values);
         if (context.index === null) list.push(item); else list[context.index] = item;
         await writeRepoJSON('media', state.data.media, `${context.index === null ? 'إضافة' : 'تحديث'} صورة`);
+      } else if (context.type === 'media-document') {
+        const list = state.data.media.documents;
+        const item = Object.assign({}, context.index === null ? { id: uid('media-document') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('media', state.data.media, `${context.index === null ? 'إضافة' : 'تحديث'} ملف إعلامي: ${item.title}`);
       } else if (context.type === 'partner') {
         const list = state.data.partners.partners;
         const item = Object.assign({}, context.index === null ? { id: uid('partner') } : list[context.index], values);
@@ -632,7 +647,7 @@
     const values = formObject(form);
     const site = Object.assign({}, state.data.site, { name: values.name, city: values.city, description: values.description });
     const goals = $$('[data-goal-input]').map((input) => input.value.trim()).filter(Boolean);
-    const about = Object.assign({}, state.data.about, { summary: values.summary, vision: values.vision, mission: values.mission, geographic_scope: values.geographic_scope, goals });
+    const about = Object.assign({}, state.data.about, { summary: values.summary, vision: values.vision, mission: values.mission, geographic_scope: values.geographic_scope, organization_chart: values.organization_chart || state.data.about.organization_chart || '', goals });
     setBusy(button, true);
     try {
       await writeRepoJSON('site', site, 'تحديث بيانات الجمعية');
@@ -651,7 +666,7 @@
     const site = Object.assign({}, state.data.site, values);
     setBusy(button, true);
     try {
-      await writeRepoJSON('site', site, 'تحديث بيانات التواصل والشكاوى');
+      await writeRepoJSON('site', site, 'تحديث بيانات التواصل');
       state.data.site = site;
       toast('تم حفظ بيانات التواصل', 'تحقق من الموقع بعد اكتمال النشر.', 'success');
     } catch (error) { toast('تعذر الحفظ', error.message, 'error'); }
@@ -675,6 +690,7 @@
     if (kind === 'document') { key = 'governance'; list = state.data.governance.documents; label = list[index]?.title; }
     if (kind === 'news') { key = 'media'; list = state.data.media.news; label = list[index]?.title; }
     if (kind === 'gallery') { key = 'media'; list = state.data.media.gallery; label = list[index]?.title || 'صورة'; }
+    if (kind === 'media-document') { key = 'media'; list = state.data.media.documents; label = list[index]?.title; }
     if (kind === 'partner') { key = 'partners'; list = state.data.partners.partners; label = list[index]?.name; }
     if (!list || !list[index]) return;
     askDelete('تأكيد الحذف', `سيتم حذف «${label}» من الموقع. هل تريد المتابعة؟`, async () => {
@@ -744,6 +760,9 @@
     else if (action === 'new-gallery') openDrawer('gallery');
     else if (action === 'edit-gallery') openDrawer('gallery', Number(actionEl.dataset.index));
     else if (action === 'delete-gallery') deleteItem('gallery', Number(actionEl.dataset.index));
+    else if (action === 'new-media-document') openDrawer('media-document');
+    else if (action === 'edit-media-document') openDrawer('media-document', Number(actionEl.dataset.index));
+    else if (action === 'delete-media-document') deleteItem('media-document', Number(actionEl.dataset.index));
     else if (action === 'new-partner') openDrawer('partner');
     else if (action === 'edit-partner') openDrawer('partner', Number(actionEl.dataset.index));
     else if (action === 'delete-partner') deleteItem('partner', Number(actionEl.dataset.index));
