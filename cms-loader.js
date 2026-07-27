@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10213d">
+  <title>إدارة موقع جمعية أثر القيم</title>
+  <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin-style.css">
+</head>
+<body>
+  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+  <section id="loginScreen" class="login-screen">
+    <div class="login-panel">
+      <div class="login-brand">
+        <img src="../assets/images/athar-logo.png" alt="شعار جمعية أثر القيم">
+        <div><strong>جمعية أثر القيم</strong><span>مركز إدارة الموقع</span></div>
+      </div>
+      <div class="login-copy">
+        <span class="eyebrow">لوحة سهلة لفريق الجمعية</span>
+        <h1>أضف نشاطًا أو عدّل بيانات الموقع خلال دقائق.</h1>
+        <p>لا تحتاج إلى فتح GitHub أو تعديل الأكواد. سجّل الدخول، اختر القسم، ثم احفظ التحديث.</p>
+      </div>
+      <div class="login-actions">
+        <button id="loginButton" class="button button-primary" type="button">تسجيل الدخول</button>
+        <a class="button button-soft" href="../index.html" target="_blank" rel="noopener">فتح الموقع</a>
+      </div>
+      <p class="login-help">الدخول متاح للحسابات التي تمت دعوتها من Netlify Identity فقط.</p>
+    </div>
+    <aside class="login-aside">
+      <div class="aside-badge">مهيأة للاستخدام اليومي</div>
+      <div class="login-feature"><b>01</b><div><strong>إضافة سريعة</strong><span>نشاط، عضو، إحصائية أو ملف.</span></div></div>
+      <div class="login-feature"><b>02</b><div><strong>نماذج واضحة</strong><span>حقول عربية مختصرة مع شرح لكل خطوة.</span></div></div>
+      <div class="login-feature"><b>03</b><div><strong>نشر مباشر</strong><span>الحفظ يحدّث ملفات الموقع في GitHub.</span></div></div>
+    </aside>
+  </section>
+
+  <div id="adminApp" class="admin-app is-hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <img src="../assets/images/athar-logo-reverse.png" alt="شعار جمعية أثر القيم">
+        <div><strong>أثر القيم</strong><span>لوحة الإدارة</span></div>
+        <button id="closeSidebar" class="icon-button sidebar-close" type="button" aria-label="إغلاق القائمة">×</button>
+      </div>
+
+      <button class="primary-create" data-action="new-program" type="button"><span>＋</span> إضافة نشاط جديد</button>
+
+      <nav class="sidebar-nav" aria-label="أقسام لوحة الإدارة">
+        <button class="nav-button is-active" data-page="dashboard" type="button"><span class="nav-symbol">⌂</span><span>الرئيسية</span></button>
+        <div class="nav-label">محتوى الجمعية</div>
+        <button class="nav-button" data-page="site" type="button"><span class="nav-symbol">✎</span><span>بيانات الجمعية</span></button>
+        <button class="nav-button" data-page="programs" type="button"><span class="nav-symbol">✦</span><span>البرامج والمبادرات</span><em id="programNavCount">0</em></button>
+        <button class="nav-button" data-page="organization" type="button"><span class="nav-symbol">◎</span><span>الأعضاء والقيادات</span></button>
+        <button class="nav-button" data-page="impact" type="button"><span class="nav-symbol">↗</span><span>الإحصاءات والأثر</span></button>
+        <div class="nav-label">الوثائق والنشر</div>
+        <button class="nav-button" data-page="governance" type="button"><span class="nav-symbol">▤</span><span>الحوكمة واللوائح</span></button>
+        <button class="nav-button" data-page="financial" type="button"><span class="nav-symbol">◫</span><span>التقارير المالية</span></button>
+        <button class="nav-button" data-page="media" type="button"><span class="nav-symbol">◉</span><span>المركز الإعلامي</span></button>
+        <button class="nav-button" data-page="partners" type="button"><span class="nav-symbol">◇</span><span>الشركاء</span></button>
+        <button class="nav-button" data-page="contact" type="button"><span class="nav-symbol">☎</span><span>بيانات التواصل</span></button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <a href="../index.html" target="_blank" rel="noopener">معاينة الموقع ↗</a>
+        <button id="logoutButton" type="button">تسجيل الخروج</button>
+      </div>
+    </aside>
+
+    <div class="app-main">
+      <header class="topbar">
+        <div class="topbar-title-wrap">
+          <button id="openSidebar" class="icon-button menu-button" type="button" aria-label="فتح القائمة">☰</button>
+          <div>
+            <span id="pageEyebrow">مركز إدارة موقع الجمعية</span>
+            <h1 id="pageTitle">الرئيسية</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <div id="connectionState" class="connection-state"><i></i><span>جاري الاتصال…</span></div>
+          <button id="refreshButton" class="button button-plain" type="button">تحديث البيانات</button>
+          <a class="button button-soft compact" href="../index.html" target="_blank" rel="noopener">معاينة الموقع</a>
+          <div class="user-menu">
+            <span id="userInitial">أ</span>
+            <div><strong id="userName">مسؤول الموقع</strong><small id="userEmail">—</small></div>
+          </div>
+        </div>
+      </header>
+
+      <main id="workspace" class="workspace" tabindex="-1">
+        <section id="loadingView" class="loading-view">
+          <div class="loader"></div>
+          <strong>جاري تحميل بيانات الموقع</strong>
+          <span>لحظات ونجهز لوحة الإدارة…</span>
+        </section>
+        <section id="pageContent" class="page-content is-hidden"></section>
+      </main>
+    </div>
+  </div>
+
+  <div id="drawerBackdrop" class="drawer-backdrop is-hidden"></div>
+  <aside id="editorDrawer" class="editor-drawer" aria-hidden="true">
+    <header class="drawer-header">
+      <div><span id="drawerEyebrow">إضافة جديدة</span><h2 id="drawerTitle">إضافة نشاط</h2></div>
+      <button id="closeDrawer" class="icon-button" type="button" aria-label="إغلاق">×</button>
+    </header>
+    <div id="drawerBody" class="drawer-body"></div>
+    <footer class="drawer-footer">
+      <button id="cancelDrawer" class="button button-plain" type="button">إلغاء</button>
+      <button id="saveDrawer" class="button button-primary" type="button">حفظ ونشر</button>
+    </footer>
+  </aside>
+
+  <div id="confirmDialog" class="confirm-dialog is-hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <div class="confirm-card">
+      <div class="confirm-icon">!</div>
+      <h2 id="confirmTitle">تأكيد الحذف</h2>
+      <p id="confirmMessage">هل أنت متأكد؟</p>
+      <div><button id="cancelConfirm" class="button button-plain" type="button">إلغاء</button><button id="approveConfirm" class="button button-danger" type="button">حذف</button></div>
+    </div>
+  </div>
+
+  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
+  <input id="globalFileInput" class="visually-hidden" type="file">
+
+  <script src="admin-shell.js"></script>
+</body>
+</html>

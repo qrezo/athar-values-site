@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>عن الجمعية | جمعية أثر القيم</title>
+<meta content="شهادة الترخيص والخريطة الاستراتيجية والهيكل المؤسسي لجمعية أثر القيم." name="description"/>
+<link href="assets/images/favicon.svg" rel="icon" type="image/svg+xml"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="anonymous" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;600;700;800;900&amp;family=Noto+Sans+Arabic:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="assets/css/style.css?v=20260727-premium-v5" rel="stylesheet"/>
+</head>
+<body class="inner-page">
+<a class="skip-link" href="#main">تجاوز إلى المحتوى</a>
+<header class="site-header">
+<div class="container navbar">
+<a aria-label="جمعية أثر القيم - الرئيسية" class="brand" href="index.html">
+<picture>
+<source media="(max-width: 1180px)" srcset="assets/images/athar-logo-mobile-v2.png"/>
+<img alt="شعار جمعية أثر القيم" height="989" src="assets/images/athar-logo-reverse.png" width="800"/>
+</picture>
+</a>
+<button aria-expanded="false" aria-label="فتح القائمة" class="nav-toggle" type="button"><span></span></button>
+<nav aria-label="القائمة الرئيسية" class="main-nav"><ul class="nav-list">
+<li><a class="nav-link" href="index.html">الرئيسية</a></li>
+<li class="dropdown">
+<button aria-expanded="false" class="dropdown-toggle active" type="button">عن الجمعية</button>
+<div class="dropdown-menu">
+<a href="about.html">نبذة عن الجمعية</a>
+<a href="about.html#license">شهادة الترخيص</a>
+<a href="about.html#strategy">الخريطة الاستراتيجية</a>
+<a href="about.html#organization">الهيكل التنظيمي</a>
+<a href="about.html#assembly">الجمعية العمومية</a>
+<a href="about.html#board">مجلس الإدارة</a>
+<a href="about.html#executive">الإدارة التنفيذية</a>
+</div>
+</li>
+<li><a class="nav-link" href="programs.html">البرامج والمبادرات</a></li>
+<li><a class="nav-link" href="impact.html">الإحصاءات والأثر</a></li>
+<li><a class="nav-link" href="governance.html">الحوكمة</a></li>
+<li><a class="nav-link" href="financial-reports.html">التقارير المالية</a></li>
+<li><a class="nav-link" href="media.html">المركز الإعلامي</a></li>
+</ul><div aria-label="التواصل المباشر" class="mobile-menu-contact">
+<span class="mobile-menu-contact-title">تواصل مباشر</span>
+<div class="mobile-menu-contact-grid">
+<a aria-label="فتح واتساب الجمعية" data-cms-whatsapp="" href="https://wa.me/966557195594" rel="noopener" target="_blank">
+<span aria-hidden="true" class="mobile-menu-contact-icon">◌</span>
+<span><small>واتساب</small><strong dir="ltr">+966 55 719 5594</strong></span>
+</a>
+<a aria-label="مراسلة الجمعية عبر البريد الإلكتروني" data-cms-email-action="" href="mailto:info@atharq.org">
+<span aria-hidden="true" class="mobile-menu-contact-icon">✉</span>
+<span><small>البريد الإلكتروني</small><strong>info@atharq.org</strong></span>
+</a>
+</div>
+</div></nav>
+<div aria-label="قنوات التواصل المباشر" class="header-contact-actions">
+<a aria-label="التواصل عبر البريد الإلكتروني" class="header-contact-link header-contact-link--email" data-cms-email-action="" href="mailto:info@atharq.org">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M3.5 6.5h17v11h-17z"></path><path d="m4 7 8 6 8-6"></path></svg><span>البريد</span>
+</a>
+<a aria-label="التواصل عبر واتساب" class="header-contact-link header-contact-link--whatsapp" data-cms-whatsapp="" href="https://wa.me/966557195594" rel="noopener" target="_blank">
+<svg aria-hidden="true" viewbox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 0 0-7.4 12.7L3.5 20.5l4.4-1.1A8.5 8.5 0 1 0 12 3.5Z"></path><path d="M9 8.2c.4 2.5 2.3 4.4 4.8 4.8"></path><path d="M8.8 8.1 10 7.6l1 2-1 .8"></path><path d="m13.6 12.1.8-1 2 1-.5 1.2"></path></svg><span>واتساب</span>
+</a>
+</div></div>
+</header>
+<main id="main">
+<section class="page-hero">
+<div class="container page-hero-grid">
+<div class="about-hero-copy"><span class="eyebrow eyebrow--light">التعريف المؤسسي</span><h1>عن الجمعية</h1><p>البيانات الرسمية، والتوجه الاستراتيجي، والهيكل المؤسسي للجمعية.</p>
+<div class="about-summary-card">
+<div class="about-summary-main"><small>نبذة مختصرة</small><p data-cms-about-summary="">جمعية أهلية تُعنى بترسيخ القيم وتنمية الشخصية لدى الناشئة والشباب، وتمكين العاملين معهم، عبر برامج نوعية وبيئات جاذبة وشراكات فاعلة.</p></div>
+<div class="about-summary-points">
+<div><span>الرؤية</span><p data-cms-vision="">مرجع نوعي في التمكين القيمي وصناعة أثره.</p></div>
+<div><span>الرسالة</span><p data-cms-mission="">نرسخ القيم وننمي الشخصية لدى الناشئة والشباب، ونمكّن العاملين معهم، عبر برامج نوعية وبيئات جاذبة وشراكات فاعلة؛ لصناعة أثر قيمي مستدام.</p></div>
+</div>
+</div>
+</div>
+<nav aria-label="أقسام صفحة عن الجمعية" class="anchor-nav"><a href="#license">شهادة الترخيص</a><a href="#strategy">الخريطة الاستراتيجية</a><a href="#organization">الهيكل التنظيمي</a><a href="#assembly">الجمعية العمومية</a><a href="#board">مجلس الإدارة</a><a href="#executive">الإدارة التنفيذية</a></nav>
+</div>
+</section>
+<section class="content-section" id="license">
+<div class="container two-column">
+<div>
+<span class="eyebrow">01 — شهادة الترخيص</span>
+<h2>الشهادة الرسمية للجمعية</h2>
+<p>جمعية أثر القيم جمعية أهلية مرخّصة لدى المركز الوطني لتنمية القطاع غير الربحي، وتحمل رقم الترخيص <strong>1000843500</strong> والرقم الوطني الموحد <strong>7053303603</strong>.</p>
+<div class="fact-grid">
+<div><small>نوع المنظمة</small><strong>جمعية أهلية</strong></div>
+<div><small>تاريخ الترخيص</small><strong>08 يناير 2026</strong></div>
+<div><small>سريان الشهادة</small><strong>حتى 08 يناير 2030</strong></div>
+<div><small>نطاق الخدمة</small><strong>حسب اللائحة الأساسية</strong></div>
+</div>
+<a class="button button--navy" href="assets/uploads/license-certificate.pdf" rel="noopener" target="_blank">تحميل / عرض الشهادة</a>
+</div>
+<a class="certificate-card certificate-card--wide" href="assets/uploads/license-certificate.pdf" rel="noopener" target="_blank"><img alt="شهادة ترخيص جمعية أثر القيم" src="assets/images/certificate-preview.png"/><span>نسخة الشهادة المعتمدة</span></a>
+</div>
+</section>
+<section class="content-section content-section--tint" id="strategy">
+<div class="container">
+<div class="section-heading"><span class="eyebrow">02 — الخريطة الاستراتيجية</span><h2>توجه استراتيجي نحو التمكين القيمي وصناعة أثره.</h2><p>عناصر رئيسية تحدد وجهة الجمعية، وتربط بين رؤيتها ورسالتها وأهدافها التفصيلية.</p></div>
+<div class="strategy-grid">
+<article><span>01</span><h3>الرؤية</h3><p data-cms-vision="">مرجع نوعي في التمكين القيمي وصناعة أثره.</p></article>
+<article><span>02</span><h3>الرسالة</h3><p data-cms-mission="">نرسخ القيم وننمي الشخصية لدى الناشئة والشباب، ونمكّن العاملين معهم، عبر برامج نوعية وبيئات جاذبة وشراكات فاعلة؛ لصناعة أثر قيمي مستدام.</p></article>
+<article><span>03</span><h3>محاور العمل</h3><div id="cms-strategic-goals"><ul class="strategy-goals"><li>ترسيخ القيم وربطها بالسلوك اليومي.</li><li>تنمية الشخصية لدى الناشئة والشباب.</li><li>تمكين العاملين مع الناشئة والشباب بأدوات ومنهجيات قيمية.</li><li>بناء شراكات تعزز الوصول والأثر.</li></ul></div></article>
+<article><span>04</span><h3>النطاق الجغرافي</h3><p data-cms-scope="">منطقة مكة المكرمة، وفق بيانات الجمعية وهويتها الرسمية.</p></article>
+</div>
+</div>
+</section><section class="content-section organization-section" id="organization">
+<div class="container">
+<div class="section-heading section-heading--split"><div><span class="eyebrow">03 - الهيكل التنظيمي</span><h2>هيكل واضح يربط المسؤولية بالتنفيذ.</h2></div><p>يوضح الهيكل التنظيمي مستويات الإشراف والإدارة والوحدات التنفيذية في الجمعية، بما يدعم وضوح الأدوار وتكامل العمل.</p></div>
+<div class="org-chart-shell" data-reveal="">
+<div class="org-chart-toolbar"><div><strong>الهيكل التنظيمي لجمعية أثر القيم</strong><span>مرّر أفقيًا على الجوال أو افتح الصورة بالحجم الكامل.</span></div><a class="button button--outline" href="assets/images/organizational-structure.png" rel="noopener" target="_blank">فتح بالحجم الكامل</a></div>
+<div class="org-chart-viewport"><img alt="الهيكل التنظيمي لجمعية أثر القيم" data-cms-organization-chart="" src="assets/images/organizational-structure.png"/></div>
+</div>
+</div>
+</section>
+<section class="content-section" id="assembly">
+<div class="container governance-row">
+<div class="section-number">04</div>
+<div><span class="eyebrow">الجمعية العمومية</span><h2>بيانات الجمعية العمومية</h2><p>أسماء الأعضاء ونوع العضوية وفق السجل المعتمد للجمعية.</p></div>
+<div class="member-list-panel" id="cms-assembly-members"><div class="empty-panel"><span class="empty-icon">01</span><strong>قائمة الأعضاء المعتمدة</strong><p>لطلب قائمة أعضاء الجمعية العمومية ونوع العضوية، تواصل مع الجمعية.</p><a class="text-link" data-cms-whatsapp="" href="https://wa.me/966557195594" rel="noopener" target="_blank">طلب القائمة <span>←</span></a></div></div>
+</div>
+</section>
+<section class="content-section content-section--tint" id="board">
+<div class="container governance-row">
+<div class="section-number">05</div>
+<div><span class="eyebrow">مجلس الإدارة</span><h2>بيانات مجلس الإدارة</h2><p>أسماء أعضاء المجلس ومسمياتهم وفق السجل الرسمي للجمعية.</p></div>
+<div class="member-list-panel" id="cms-board-members"><div class="empty-panel"><span class="empty-icon">02</span><strong>قائمة المجلس المعتمدة</strong><p>لطلب قائمة أعضاء مجلس الإدارة ومسمياتهم، تواصل مع الجمعية.</p><a class="text-link" data-cms-whatsapp="" href="https://wa.me/966557195594" rel="noopener" target="_blank">طلب القائمة <span>←</span></a></div></div>
+</div>
+</section>
+<section class="content-section" id="executive">
+<div class="container">
+<div class="section-heading"><span class="eyebrow">06 - الإدارة التنفيذية</span><h2>التواصل مع الإدارة التنفيذية</h2><p>قنوات مباشرة للتنسيق بشأن أعمال الجمعية وبرامجها وشراكاتها.</p></div>
+<div class="people-grid" id="cms-executive-members">
+<article><div class="avatar-placeholder">01</div><h3>الإدارة التنفيذية</h3><p>متابعة أعمال الجمعية وبرامجها ومبادراتها اليومية.</p></article>
+<article><div class="avatar-placeholder">02</div><h3>الشراكات والتعاون</h3><p>للتنسيق بشأن المبادرات والبرامج المشتركة مع الجمعية.</p></article>
+<article class="people-contact"><div class="avatar-placeholder">03</div><h3>التواصل الإداري</h3><a data-cms-email="" href="mailto:info@atharq.org">info@atharq.org</a><a data-cms-phone="" dir="ltr" href="tel:+966557195594">+966 55 719 5594</a></article>
+</div>
+</div>
+</section>
+</main>
+<footer class="site-footer">
+<div class="container footer-main footer-main--clean">
+<div class="footer-brand">
+<img alt="شعار جمعية أثر القيم" class="footer-logo" src="assets/images/athar-logo-mobile-v2.png"/>
+<p>جمعية أهلية تُعنى بترسيخ القيم وتنمية الشخصية لدى الناشئة والشباب، وتمكين العاملين معهم، عبر برامج نوعية وبيئات جاذبة وشراكات فاعلة.</p>
+<a class="footer-license" href="about.html#license"><span>جمعية أهلية مرخّصة</span><strong>1000843500</strong></a>
+</div>
+<div class="footer-column footer-column--association">
+<h2 class="footer-title">روابط الجمعية</h2>
+<nav aria-label="روابط الجمعية" class="footer-links footer-links--grid">
+<a href="about.html">عن الجمعية</a>
+<a href="about.html#organization">الهيكل التنظيمي</a>
+<a href="programs.html">البرامج والمبادرات</a>
+<a href="impact.html">الإحصاءات والأثر</a>
+<a href="governance.html">الحوكمة</a>
+<a href="financial-reports.html">التقارير المالية</a>
+<a href="media.html">المركز الإعلامي</a>
+<a href="partners.html">الشركاء</a>
+</nav>
+</div>
+<div class="footer-column footer-column--official">
+<h2 class="footer-title">روابط ذات صلة</h2>
+<nav aria-label="روابط الجهات ذات الصلة" class="footer-official-links footer-official-links--separate">
+<a href="https://ncnp.gov.sa/ar" rel="noopener" target="_blank">المركز الوطني لتنمية القطاع غير الربحي <span aria-hidden="true">↗</span></a>
+<a href="https://nvg.gov.sa/" rel="noopener" target="_blank">المنصة الوطنية للعمل التطوعي <span aria-hidden="true">↗</span></a>
+<a href="https://www.vision2030.gov.sa/ar/" rel="noopener" target="_blank">رؤية السعودية 2030 <span aria-hidden="true">↗</span></a>
+</nav>
+</div>
+<div class="footer-column footer-column--contact">
+<h2 class="footer-title">تواصل مباشر</h2>
+<div class="footer-contact-list footer-contact-list--labelled">
+<a aria-label="فتح واتساب على الرقم +966 55 719 5594" class="footer-contact-value footer-contact-value--whatsapp" data-cms-whatsapp="" href="https://wa.me/966557195594" rel="noopener" target="_blank"><span>واتساب</span><strong dir="ltr">+966 55 719 5594</strong></a>
+<a class="footer-contact-value" data-cms-email="" href="mailto:info@atharq.org"><span>البريد الإلكتروني</span><strong>info@atharq.org</strong></a>
+<span class="footer-contact-value footer-contact-location" data-cms-city=""><span>المقر</span><strong>جدة - منطقة مكة المكرمة</strong></span>
+</div>
+<a class="footer-complaints-link footer-complaints-link--button" data-cms-complaints-whatsapp="" href="https://wa.me/966557195594?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D9%84%D8%AF%D9%8A%20%D8%B4%D9%83%D9%88%D9%89%20%D8%A3%D9%88%20%D9%85%D9%82%D8%AA%D8%B1%D8%AD%20%D9%88%D8%A3%D8%B1%D8%BA%D8%A8%20%D9%81%D9%8A%20%D9%85%D8%B4%D8%A7%D8%B1%D9%83%D8%AA%D9%87%20%D9%85%D8%B9%20%D8%A7%D9%84%D8%AC%D9%85%D8%B9%D9%8A%D8%A9." rel="noopener" target="_blank">الشكاوى والمقترحات <span aria-hidden="true">←</span></a>
+</div>
+</div>
+<div class="container footer-bottom">
+<span>جميع الحقوق محفوظة لجمعية أثر القيم © <span data-year=""></span></span>
+<div><a href="privacy.html">سياسة الخصوصية</a><span aria-hidden="true">•</span><a href="admin/">إدارة الموقع</a></div>
+</div>
+</footer>
+<script src="assets/js/main.js?v=20260727-premium-v5"></script>
+<script src="assets/js/site-data-fallback.js?v=20260727-premium-v5"></script><script src="assets/js/cms-loader.js?v=20260727-premium-v5"></script>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+<script>
+if (window.netlifyIdentity) {
+  window.netlifyIdentity.on("init", function(user) {
+    if (!user) window.netlifyIdentity.on("login", function() { document.location.href = "/admin/"; });
+  });
+}
+</script>
+</body>
+</html>

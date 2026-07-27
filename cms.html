@@ -1,0 +1,834 @@
+(() => {
+  'use strict';
+
+  const $ = (selector, scope = document) => scope.querySelector(selector);
+  const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
+  const demoMode = new URLSearchParams(location.search).get('demo') === '1';
+  const branch = 'main';
+  const files = {
+    site: 'data/site.json',
+    about: 'data/about.json',
+    programs: 'data/programs.json',
+    impact: 'data/impact.json',
+    governance: 'data/governance.json',
+    media: 'data/media.json',
+    partners: 'data/partners.json'
+  };
+
+  const defaults = {
+    site: {
+      name: 'جمعية أثر القيم',
+      description: '',
+      phone: '+966 55 719 5594',
+      whatsapp: '+966 55 719 5594',
+      email: 'info@atharq.org',
+      city: 'جدة - منطقة مكة المكرمة',
+    },
+    about: {
+      summary: '', vision: '', mission: '', goals: [], geographic_scope: '', organization_chart: '',
+      assembly_members: [], board_members: [], executive_members: []
+    },
+    programs: { programs: [] },
+    impact: { statistics: [], reports: [] },
+    governance: { documents: [] },
+    media: { news: [], articles: [], gallery: [], documents: [] },
+    partners: { partners: [] }
+  };
+
+  const state = {
+    data: structuredClone(defaults),
+    shas: {},
+    currentPage: 'dashboard',
+    programSearch: '',
+    programFilter: 'الكل',
+    organizationTab: 'assembly',
+    drawer: null,
+    authUser: null,
+    online: false,
+    loading: false,
+    pendingConfirm: null,
+    uploadTarget: null
+  };
+
+  const pageMeta = {
+    dashboard: ['الرئيسية', 'مركز إدارة موقع الجمعية'],
+    site: ['بيانات الجمعية', 'التعريف والخريطة الاستراتيجية'],
+    programs: ['البرامج والمبادرات', 'إدارة البرامج والمبادرات المنشورة'],
+    organization: ['الأعضاء والقيادات', 'الجمعية العمومية ومجلس الإدارة والتنفيذيون'],
+    impact: ['الإحصاءات والأثر', 'المؤشرات وتقارير الأثر'],
+    governance: ['الحوكمة واللوائح', 'السياسات والأدلة والوثائق'],
+    financial: ['التقارير المالية', 'القوائم والتقارير المالية السنوية'],
+    media: ['الأخبار والصور', 'المركز الإعلامي'],
+    partners: ['الشركاء', 'الجهات الشريكة والداعمة'],
+    contact: ['بيانات التواصل', 'واتساب والبريد الإلكتروني']
+  };
+
+  function clone(value) { return JSON.parse(JSON.stringify(value)); }
+  function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#039;', '"': '&quot;' }[char]));
+  }
+  function valueAttr(value) { return escapeHTML(value ?? ''); }
+  function uid(prefix = 'item') { return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
+  function array(value) { return Array.isArray(value) ? value : []; }
+  function initials(name) {
+    const parts = String(name || 'أ').trim().split(/\s+/).filter(Boolean);
+    return (parts[0]?.[0] || 'أ') + (parts[1]?.[0] || '');
+  }
+  function localKey(path) { return `athar-admin:${path}`; }
+  function formatDate(value) {
+    if (!value) return 'بدون تاريخ';
+    try { return new Intl.DateTimeFormat('ar-SA', { year: 'numeric', month: 'short', day: 'numeric' }).format(new Date(value)); }
+    catch (_) { return value; }
+  }
+  function categoryClass(status) {
+    return status === 'منشور' || status === 'نشط' ? 'status-active' : status === 'مسودة' ? 'status-draft' : '';
+  }
+
+  function encodeText(text) {
+    const bytes = new TextEncoder().encode(text);
+    let binary = '';
+    const chunk = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunk) binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+    return btoa(binary);
+  }
+  function decodeText(base64) {
+    const clean = String(base64 || '').replace(/\n/g, '');
+    const binary = atob(clean);
+    const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
+    return new TextDecoder().decode(bytes);
+  }
+  function bufferToBase64(buffer) {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunk = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunk) binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+    return btoa(binary);
+  }
+  function encodePath(path) { return path.split('/').map(encodeURIComponent).join('/'); }
+
+  async function jwt() {
+    if (!state.authUser || typeof state.authUser.jwt !== 'function') throw new Error('جلسة الدخول غير متاحة. سجّل الدخول مرة أخرى.');
+    return state.authUser.jwt();
+  }
+
+  async function gatewayFetch(path, options = {}) {
+    const token = await jwt();
+    const headers = Object.assign({
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    }, options.headers || {});
+    return fetch(`/.netlify/git/github/contents/${encodePath(path)}${options.query || ''}`, Object.assign({}, options, { headers }));
+  }
+
+  async function readRepoJSON(key) {
+    const path = files[key];
+    if (demoMode) {
+      const saved = localStorage.getItem(localKey(path));
+      if (saved) return { data: JSON.parse(saved), sha: null };
+      const response = await fetch(`../${path}?v=${Date.now()}`, { cache: 'no-store' });
+      return { data: response.ok ? await response.json() : clone(defaults[key]), sha: null };
+    }
+    const response = await gatewayFetch(path, { method: 'GET', query: `?ref=${encodeURIComponent(branch)}` });
+    if (!response.ok) throw new Error(`تعذر قراءة ${path} (${response.status})`);
+    const payload = await response.json();
+    return { data: JSON.parse(decodeText(payload.content)), sha: payload.sha };
+  }
+
+  async function readPublicJSON(key) {
+    const path = files[key];
+    const response = await fetch(`../${path}?v=${Date.now()}`, { cache: 'no-store' });
+    if (!response.ok) return clone(defaults[key]);
+    return response.json();
+  }
+
+  async function writeRepoJSON(key, data, message) {
+    const path = files[key];
+    if (demoMode) {
+      localStorage.setItem(localKey(path), JSON.stringify(data));
+      state.data[key] = clone(data);
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      return;
+    }
+    if (!state.online) throw new Error('لوحة الإدارة غير متصلة بـ GitHub. تحقق من Netlify Identity وGit Gateway.');
+    const body = {
+      message: message || `تحديث ${path} من لوحة الإدارة`,
+      content: encodeText(`${JSON.stringify(data, null, 2)}\n`),
+      branch
+    };
+    if (state.shas[key]) body.sha = state.shas[key];
+    const response = await gatewayFetch(path, { method: 'PUT', body: JSON.stringify(body) });
+    if (!response.ok) {
+      let detail = '';
+      try { detail = (await response.json()).message || ''; } catch (_) {}
+      throw new Error(detail || `تعذر حفظ ${path} (${response.status})`);
+    }
+    const payload = await response.json();
+    state.shas[key] = payload.content?.sha || state.shas[key];
+    state.data[key] = clone(data);
+  }
+
+  async function uploadAsset(file, prefix = 'file') {
+    if (!file) throw new Error('اختر ملفًا أولًا.');
+    if (file.size > 12 * 1024 * 1024) throw new Error('حجم الملف أكبر من 12 ميجابايت. صغّر الملف ثم حاول مرة أخرى.');
+    if (demoMode) {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(file);
+      });
+      return dataUrl;
+    }
+    if (!state.online) throw new Error('رفع الملفات يحتاج اتصال Git Gateway.');
+    const extension = (file.name.split('.').pop() || 'bin').toLowerCase().replace(/[^a-z0-9]/g, '') || 'bin';
+    const cleanPrefix = String(prefix).toLowerCase().replace(/[^a-z0-9-]/g, '-') || 'file';
+    const path = `assets/uploads/${cleanPrefix}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}.${extension}`;
+    const content = bufferToBase64(await file.arrayBuffer());
+    const response = await gatewayFetch(path, {
+      method: 'PUT',
+      body: JSON.stringify({ message: `رفع ${file.name} من لوحة الإدارة`, content, branch })
+    });
+    if (!response.ok) {
+      let detail = '';
+      try { detail = (await response.json()).message || ''; } catch (_) {}
+      throw new Error(detail || `تعذر رفع الملف (${response.status})`);
+    }
+    return `/${path}`;
+  }
+
+  function toast(title, message = '', type = '') {
+    const region = $('#toastRegion');
+    const item = document.createElement('div');
+    item.className = `toast ${type}`.trim();
+    item.innerHTML = `<div>●</div><div><strong>${escapeHTML(title)}</strong>${message ? `<span>${escapeHTML(message)}</span>` : ''}</div>`;
+    region.appendChild(item);
+    setTimeout(() => item.remove(), 4200);
+  }
+
+  function setConnection(mode, text) {
+    const el = $('#connectionState');
+    el.classList.remove('is-online', 'is-local');
+    if (mode) el.classList.add(mode);
+    $('span', el).textContent = text;
+  }
+
+  function setBusy(button, busy, label = 'جاري الحفظ…') {
+    if (!button) return;
+    if (busy) {
+      button.dataset.originalText = button.textContent;
+      button.textContent = label;
+      button.disabled = true;
+    } else {
+      button.textContent = button.dataset.originalText || button.textContent;
+      button.disabled = false;
+    }
+  }
+
+  async function loadAll({ quiet = false } = {}) {
+    state.loading = true;
+    if (!quiet) {
+      $('#loadingView').classList.remove('is-hidden');
+      $('#pageContent').classList.add('is-hidden');
+    }
+    try {
+      if (demoMode) {
+        const results = await Promise.all(Object.keys(files).map(async (key) => [key, await readRepoJSON(key)]));
+        results.forEach(([key, result]) => { state.data[key] = Object.assign(clone(defaults[key]), result.data || {}); });
+        state.online = false;
+        setConnection('is-local', 'وضع المعاينة المحلي');
+      } else {
+        try {
+          const results = await Promise.all(Object.keys(files).map(async (key) => [key, await readRepoJSON(key)]));
+          results.forEach(([key, result]) => {
+            state.data[key] = Object.assign(clone(defaults[key]), result.data || {});
+            state.shas[key] = result.sha;
+          });
+          state.online = true;
+          setConnection('is-online', 'متصل بـ GitHub');
+        } catch (error) {
+          console.error(error);
+          const results = await Promise.all(Object.keys(files).map(async (key) => [key, await readPublicJSON(key)]));
+          results.forEach(([key, data]) => { state.data[key] = Object.assign(clone(defaults[key]), data || {}); });
+          state.online = false;
+          setConnection('', 'تعذر اتصال الحفظ');
+          toast('تم تحميل نسخة القراءة فقط', 'تأكد من تفعيل Git Gateway ثم حدّث الصفحة.', 'error');
+        }
+      }
+      normalizeData();
+      updateCounts();
+      renderPage();
+    } finally {
+      state.loading = false;
+      $('#loadingView').classList.add('is-hidden');
+      $('#pageContent').classList.remove('is-hidden');
+    }
+  }
+
+  function normalizeData() {
+    state.data.about.goals = array(state.data.about.goals);
+    state.data.about.assembly_members = array(state.data.about.assembly_members);
+    state.data.about.board_members = array(state.data.about.board_members);
+    state.data.about.executive_members = array(state.data.about.executive_members);
+    state.data.programs.programs = array(state.data.programs.programs);
+    state.data.impact.statistics = array(state.data.impact.statistics);
+    state.data.impact.reports = array(state.data.impact.reports);
+    state.data.governance.documents = array(state.data.governance.documents);
+    state.data.media.news = array(state.data.media.news);
+    state.data.media.articles = array(state.data.media.articles);
+    state.data.media.gallery = array(state.data.media.gallery);
+    state.data.media.documents = array(state.data.media.documents);
+    state.data.partners.partners = array(state.data.partners.partners);
+  }
+
+  function updateCounts() {
+    $('#programNavCount').textContent = state.data.programs.programs.length;
+  }
+
+  function localNotice() {
+    if (!demoMode && state.online) return '';
+    const text = demoMode
+      ? 'أنت الآن في وضع المعاينة المحلي. التعديلات تُحفظ مؤقتًا في هذا المتصفح فقط، أما النشر الفعلي فيعمل من رابط الموقع على Netlify بعد تسجيل الدخول.'
+      : 'اللوحة تعمل حاليًا للقراءة فقط لأن اتصال Git Gateway غير متاح. فعّل Netlify Identity وGit Gateway ثم حدّث الصفحة.';
+    return `<div class="local-notice"><strong>تنبيه</strong>${escapeHTML(text)}</div>`;
+  }
+
+  function setPage(page) {
+    state.currentPage = page;
+    const [title, eyebrow] = pageMeta[page] || pageMeta.dashboard;
+    $('#pageTitle').textContent = title;
+    $('#pageEyebrow').textContent = eyebrow;
+    $$('.nav-button').forEach((button) => button.classList.toggle('is-active', button.dataset.page === page));
+    closeSidebar();
+    renderPage();
+    $('#workspace').focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function pageHead(title, description, action = '') {
+    return `<div class="content-head"><div><span class="eyebrow">إدارة المحتوى</span><h2>${escapeHTML(title)}</h2><p>${escapeHTML(description)}</p></div>${action ? `<div class="content-actions">${action}</div>` : ''}</div>`;
+  }
+
+  function renderPage() {
+    const root = $('#pageContent');
+    const renderer = {
+      dashboard: renderDashboard,
+      site: renderSite,
+      programs: renderPrograms,
+      organization: renderOrganization,
+      impact: renderImpact,
+      governance: () => renderDocuments(false),
+      financial: () => renderDocuments(true),
+      media: renderMedia,
+      partners: renderPartners,
+      contact: renderContact
+    }[state.currentPage] || renderDashboard;
+    root.innerHTML = `${localNotice()}${renderer()}`;
+  }
+
+  function renderDashboard() {
+    const programs = state.data.programs.programs;
+    const people = state.data.about.assembly_members.length + state.data.about.board_members.length + state.data.about.executive_members.length;
+    const docs = state.data.governance.documents.length;
+    const stats = state.data.impact.statistics.length;
+    const recent = programs.slice().reverse().slice(0, 5);
+    return `
+      <section class="welcome-panel">
+        <div><span class="eyebrow">مرحبًا بك في لوحة الجمعية</span><h2>ما الذي تريد إضافته اليوم؟</h2><p>أضف الأنشطة والملفات والبيانات من واجهة واحدة. كل عملية حفظ تُرسل التحديث مباشرة إلى مستودع الموقع.</p></div>
+        <div class="welcome-actions"><button class="button button-primary" data-action="new-program" type="button">＋ إضافة نشاط</button><button class="button button-plain" data-page="site" type="button">تعديل بيانات الجمعية</button></div>
+      </section>
+      <section class="metric-grid">
+        <article class="metric-card"><span>✦</span><strong>${programs.length}</strong><small>برنامج ونشاط</small></article>
+        <article class="metric-card"><span>◎</span><strong>${people}</strong><small>عضو وقيادي</small></article>
+        <article class="metric-card"><span>▤</span><strong>${docs}</strong><small>وثيقة وتقرير</small></article>
+        <article class="metric-card"><span>↗</span><strong>${stats}</strong><small>مؤشر أثر</small></article>
+      </section>
+      <section class="dashboard-grid">
+        <article class="panel"><header class="panel-head"><div><h2>إجراءات سريعة</h2><p>أكثر المهام استخدامًا في إدارة الموقع</p></div></header><div class="panel-body"><div class="quick-actions-grid">
+          <button class="quick-action" data-action="new-program" type="button"><span>＋</span><div><strong>إضافة نشاط جديد</strong><small>العنوان، الصورة، الوصف والتاريخ.</small></div></button>
+          <button class="quick-action" data-action="new-document" type="button"><span>▤</span><div><strong>رفع سياسة أو لائحة</strong><small>رفع PDF وتصنيفه في الحوكمة.</small></div></button>
+          <button class="quick-action" data-action="new-stat" type="button"><span>↗</span><div><strong>إضافة إحصائية</strong><small>عدد المستفيدين أو ساعات التطوع.</small></div></button>
+          <button class="quick-action" data-action="new-member" data-member-type="board" type="button"><span>◎</span><div><strong>إضافة عضو مجلس</strong><small>الاسم والمنصب وبيانات التواصل.</small></div></button>
+          <button class="quick-action" data-page="contact" type="button"><span>☎</span><div><strong>تحديث التواصل</strong><small>الجوال وواتساب والبريد.</small></div></button>
+        </div></div></article>
+        <article class="panel"><header class="panel-head"><div><h2>آخر الأنشطة</h2><p>الوصول السريع للتعديل</p></div><button class="filter-chip" data-page="programs" type="button">عرض الكل</button></header><div class="panel-body">
+          ${recent.length ? `<div class="activity-list">${recent.map((item) => `<div class="activity-row"><div class="thumb">${item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : 'أثر'}</div><div><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.category || item.meta || 'نشاط')}</small></div><button data-action="edit-program" data-id="${escapeHTML(item.id || '')}" data-index="${programs.indexOf(item)}" type="button">تعديل</button></div>`).join('')}</div>` : `<div class="empty-box"><strong>لا توجد أنشطة بعد</strong><span>ابدأ بإضافة أول نشاط للجمعية.</span></div>`}
+        </div></article>
+      </section>`;
+  }
+
+  function goalRows() {
+    const goals = state.data.about.goals;
+    if (!goals.length) return `<div class="repeater-row"><input data-goal-input type="text" placeholder="اكتب هدفًا استراتيجيًا"><button data-action="remove-goal" type="button" aria-label="حذف">×</button></div>`;
+    return goals.map((goal) => `<div class="repeater-row"><input data-goal-input type="text" value="${valueAttr(typeof goal === 'string' ? goal : goal.goal)}"><button data-action="remove-goal" type="button" aria-label="حذف">×</button></div>`).join('');
+  }
+
+  function renderSite() {
+    const site = state.data.site;
+    const about = state.data.about;
+    return `${pageHead('بيانات الجمعية والخريطة الاستراتيجية', 'عدّل النصوص الأساسية التي تظهر في صفحات الموقع.')}
+      <form id="siteForm" class="form-panel">
+        <section class="form-section"><div class="form-section-head"><b>01</b><div><h3>التعريف الأساسي</h3><p>اسم الجمعية والنبذة المختصرة.</p></div></div><div class="form-grid">
+          <label class="field"><span>اسم الجمعية</span><input name="name" required value="${valueAttr(site.name)}"></label>
+          <label class="field"><span>المدينة</span><input name="city" value="${valueAttr(site.city)}"></label>
+          <label class="field full"><span>الوصف المختصر في الموقع</span><textarea name="description">${escapeHTML(site.description)}</textarea><small>يظهر في الواجهة الرئيسية وبعض التذييلات.</small></label>
+          <label class="field full"><span>نبذة «عن الجمعية»</span><textarea name="summary">${escapeHTML(about.summary)}</textarea></label>
+        </div></section>
+        <section class="form-section"><div class="form-section-head"><b>02</b><div><h3>الرؤية والرسالة</h3><p>الصياغات المؤسسية المعتمدة.</p></div></div><div class="form-grid">
+          <label class="field full"><span>الرؤية</span><textarea name="vision">${escapeHTML(about.vision)}</textarea></label>
+          <label class="field full"><span>الرسالة</span><textarea name="mission">${escapeHTML(about.mission)}</textarea></label>
+          <label class="field full"><span>النطاق الجغرافي</span><input name="geographic_scope" value="${valueAttr(about.geographic_scope)}"></label>
+          ${uploadControl('organization_chart', about.organization_chart, 'صورة الهيكل التنظيمي', 'image/*')}
+        </div></section>
+        <section class="form-section"><div class="form-section-head"><b>03</b><div><h3>الأهداف الاستراتيجية</h3><p>أضف هدفًا في كل سطر.</p></div></div><div id="goalsEditor" class="goals-editor">${goalRows()}<button class="add-row-button" data-action="add-goal" type="button">＋ إضافة هدف</button></div></section>
+      </form>
+      <div class="sticky-save"><div class="sticky-save-inner"><span class="unsaved-note">تظهر التعديلات في الموقع بعد اكتمال نشر Netlify.</span><button class="button button-primary" data-action="save-site" type="button">حفظ بيانات الجمعية</button></div></div>`;
+  }
+
+  function programCategories() {
+    return ['الكل', ...new Set(state.data.programs.programs.map((item) => item.category).filter(Boolean))];
+  }
+  function renderPrograms() {
+    const all = state.data.programs.programs;
+    const query = state.programSearch.trim().toLowerCase();
+    const items = all.filter((item) => {
+      const matchesSearch = !query || `${item.title || ''} ${item.summary || ''} ${item.category || ''}`.toLowerCase().includes(query);
+      const matchesFilter = state.programFilter === 'الكل' || item.category === state.programFilter;
+      return matchesSearch && matchesFilter;
+    });
+    const categories = programCategories();
+    return `${pageHead('البرامج والمبادرات', 'أضف البرامج والمبادرات وابحث عنها وعدّلها بسهولة.', `<button class="button button-primary" data-action="new-program" type="button">＋ إضافة نشاط جديد</button>`)}
+      <div class="toolbar"><label class="search-box"><span>⌕</span><input id="programSearch" type="search" placeholder="ابحث باسم النشاط أو التصنيف" value="${valueAttr(state.programSearch)}"></label><div class="filter-group">${categories.map((category) => `<button class="filter-chip ${state.programFilter === category ? 'is-active' : ''}" data-action="filter-programs" data-value="${escapeHTML(category)}" type="button">${escapeHTML(category)}</button>`).join('')}</div></div>
+      ${items.length ? `<div class="item-grid">${items.map((item) => {
+        const index = all.indexOf(item);
+        return `<article class="item-card"><div class="item-card-media">${item.image ? `<img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title)}">` : 'أثر'}</div><div class="item-card-body"><div class="item-card-meta"><span class="badge">${escapeHTML(item.category || 'نشاط')}</span><span class="badge ${categoryClass(item.status)}">${escapeHTML(item.status || 'منشور')}</span></div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || 'لا يوجد وصف مختصر.')}</p>${item.meta || item.date ? `<small>${escapeHTML(item.meta || formatDate(item.date))}</small>` : ''}</div><div class="item-card-actions"><button data-action="edit-program" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-program" data-index="${index}" type="button">حذف</button></div></article>`;
+      }).join('')}</div>` : `<div class="empty-box"><strong>${all.length ? 'لا توجد نتائج مطابقة' : 'لا توجد أنشطة منشورة بعد'}</strong><span>${all.length ? 'غيّر البحث أو التصنيف.' : 'اضغط «إضافة نشاط جديد» للبدء.'}</span></div>`}`;
+  }
+
+  function memberList(type) {
+    const map = { assembly: 'assembly_members', board: 'board_members', executive: 'executive_members' };
+    return state.data.about[map[type]];
+  }
+  function memberTypeName(type) { return ({ assembly: 'عضو جمعية عمومية', board: 'عضو مجلس إدارة', executive: 'قيادي تنفيذي' })[type]; }
+  function renderOrganization() {
+    const tabs = [
+      ['assembly', 'الجمعية العمومية'], ['board', 'مجلس الإدارة'], ['executive', 'الإدارة التنفيذية']
+    ];
+    const items = memberList(state.organizationTab);
+    return `${pageHead('الأعضاء والقيادات', 'إدارة أسماء الأعضاء والمناصب وبيانات التواصل المهنية.', `<button class="button button-primary" data-action="new-member" data-member-type="${state.organizationTab}" type="button">＋ إضافة ${memberTypeName(state.organizationTab)}</button>`)}
+      <div class="tab-bar">${tabs.map(([key, label]) => `<button class="tab-button ${state.organizationTab === key ? 'is-active' : ''}" data-action="organization-tab" data-value="${key}" type="button">${label} (${memberList(key).length})</button>`).join('')}</div>
+      ${items.length ? `<div class="member-grid">${items.map((item, index) => `<article class="member-card"><div class="member-card-head"><div class="member-avatar">${escapeHTML(initials(item.name))}</div><div><strong>${escapeHTML(item.name)}</strong><span>${escapeHTML(item.membership_type || item.position || memberTypeName(state.organizationTab))}</span></div></div>${state.organizationTab === 'executive' ? `<div class="member-contact">${item.email ? `<span>${escapeHTML(item.email)}</span>` : ''}${item.phone ? `<span>${escapeHTML(item.phone)}</span>` : ''}</div>` : ''}<div class="member-actions"><button data-action="edit-member" data-member-type="${state.organizationTab}" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-member" data-member-type="${state.organizationTab}" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>لم تتم إضافة أسماء بعد</strong><span>يمكنك إضافة الأعضاء واحدًا تلو الآخر من الزر أعلاه.</span></div>`}`;
+  }
+
+  function renderImpact() {
+    const stats = state.data.impact.statistics;
+    const reports = state.data.impact.reports;
+    return `${pageHead('الإحصاءات والأثر', 'حدّث المؤشرات الرقمية وارفع تقارير قياس الأثر.', `<button class="button button-primary" data-action="new-stat" type="button">＋ إضافة إحصائية</button><button class="button button-plain" data-action="new-impact-report" type="button">رفع تقرير أثر</button>`)}
+      <section class="panel" style="margin-bottom:18px"><header class="panel-head"><div><h2>المؤشرات الإحصائية</h2><p>مثل: المستفيدون، ساعات التطوع، البرامج المنفذة.</p></div></header><div class="panel-body">${stats.length ? `<div class="item-grid">${stats.map((item, index) => `<article class="item-card"><div class="item-card-body"><div class="item-card-meta"><span class="badge">مؤشر أثر</span></div><h3 style="font-size:28px;color:var(--navy-900)">${escapeHTML(item.value)}</h3><p><strong>${escapeHTML(item.label)}</strong><br>${escapeHTML(item.summary || '')}</p></div><div class="item-card-actions"><button data-action="edit-stat" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-stat" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>لا توجد إحصاءات بعد</strong><span>أضف المؤشرات عند اعتمادها.</span></div>`}</div></section>
+      <section class="panel"><header class="panel-head"><div><h2>تقارير الأثر</h2><p>ملفات PDF المعتمدة.</p></div></header><div class="panel-body">${reports.length ? `<div class="list-panel">${reports.map((item, index) => documentRow(item, index, 'impact-report')).join('')}</div>` : `<div class="empty-box"><strong>لا توجد تقارير أثر بعد</strong><span>يمكن رفعها لاحقًا.</span></div>`}</div></section>`;
+  }
+
+  function isFinancial(category) { return ['القوائم المالية', 'التقارير المالية السنوية', 'التقارير السنوية'].includes(category); }
+  function documentRow(item, index, kind = 'document') {
+    return `<div class="list-row"><div><strong>${escapeHTML(item.title)}</strong><small>${escapeHTML(item.summary || item.file || '')}</small></div><span class="badge">${escapeHTML(item.category || 'تقرير أثر')}</span><span>${escapeHTML(item.year || '—')}</span><div class="row-actions">${item.file ? `<a class="filter-chip" href="${escapeHTML(item.file)}" target="_blank" rel="noopener">فتح</a>` : ''}<button data-action="edit-${kind}" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-${kind}" data-index="${index}" type="button">حذف</button></div></div>`;
+  }
+  function renderDocuments(financial) {
+    const all = state.data.governance.documents;
+    const items = all.map((item, index) => ({ item, index })).filter(({ item }) => financial ? isFinancial(item.category) : !isFinancial(item.category));
+    const title = financial ? 'التقارير والقوائم المالية' : 'الحوكمة والسياسات واللوائح';
+    const desc = financial ? 'ارفع التقارير المالية السنوية والقوائم المعتمدة.' : 'إدارة شهادة الترخيص والسياسات واللوائح وأدلة الحوكمة.';
+    return `${pageHead(title, desc, `<button class="button button-primary" data-action="${financial ? 'new-financial' : 'new-document'}" type="button">＋ رفع ملف جديد</button>`)}
+      ${items.length ? `<div class="list-panel">${items.map(({ item, index }) => documentRow(item, index, 'document')).join('')}</div>` : `<div class="empty-box"><strong>${financial ? 'لا توجد تقارير مالية بعد' : 'لا توجد ملفات في هذا القسم بعد'}</strong><span>ارفع الملفات المعتمدة عند الانتهاء منها.</span></div>`}`;
+  }
+
+  function renderMedia() {
+    const news = state.data.media.news;
+    const gallery = state.data.media.gallery;
+    return `${pageHead('الأخبار والصور', 'إدارة الأخبار المنشورة وألبوم الصور والملفات الإعلامية.', `<button class="button button-primary" data-action="new-news" type="button">＋ إضافة خبر</button><button class="button button-plain" data-action="new-gallery" type="button">إضافة صورة</button><button class="button button-plain" data-action="new-media-document" type="button">رفع ملف إعلامي</button>`)}
+      <section class="panel" style="margin-bottom:18px"><header class="panel-head"><div><h2>الأخبار</h2><p>${news.length} خبر</p></div></header><div class="panel-body">${news.length ? `<div class="item-grid">${news.map((item, index) => `<article class="item-card"><div class="item-card-media">${item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : 'خبر'}</div><div class="item-card-body"><div class="item-card-meta"><span class="badge">${escapeHTML(formatDate(item.date))}</span></div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || '')}</p></div><div class="item-card-actions"><button data-action="edit-news" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-news" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>لا توجد أخبار</strong><span>أضف أول خبر للجمعية.</span></div>`}</div></section>
+      <section class="panel" style="margin-bottom:18px"><header class="panel-head"><div><h2>ألبوم الصور</h2><p>${gallery.length} صورة</p></div></header><div class="panel-body">${gallery.length ? `<div class="item-grid">${gallery.map((item, index) => `<article class="item-card"><div class="item-card-media">${item.image ? `<img src="${escapeHTML(item.image)}" alt="">` : 'صورة'}</div><div class="item-card-body"><h3>${escapeHTML(item.title || item.caption || 'صورة')}</h3><p>${escapeHTML(item.caption || '')}</p></div><div class="item-card-actions"><button data-action="edit-gallery" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-gallery" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>ألبوم الصور فارغ</strong><span>أضف الصور المعتمدة.</span></div>`}</div></section>
+      <section class="panel"><header class="panel-head"><div><h2>الملفات الإعلامية</h2><p>${state.data.media.documents.length} ملف</p></div></header><div class="panel-body">${state.data.media.documents.length ? `<div class="list-panel">${state.data.media.documents.map((item, index) => documentRow(item, index, 'media-document')).join('')}</div>` : `<div class="empty-box"><strong>لا توجد ملفات إعلامية</strong><span>ارفع ملف PDF عند الحاجة.</span></div>`}</div></section>`;
+  }
+
+  function renderPartners() {
+    const items = state.data.partners.partners;
+    return `${pageHead('الشركاء', 'أضف شعارات الجهات الشريكة وروابطها.', `<button class="button button-primary" data-action="new-partner" type="button">＋ إضافة شريك</button>`)}
+      ${items.length ? `<div class="item-grid">${items.map((item, index) => `<article class="item-card"><div class="item-card-media">${item.logo ? `<img src="${escapeHTML(item.logo)}" alt="">` : 'شريك'}</div><div class="item-card-body"><h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.summary || '')}</p></div><div class="item-card-actions"><button data-action="edit-partner" data-index="${index}" type="button">تعديل</button><button class="danger" data-action="delete-partner" data-index="${index}" type="button">حذف</button></div></article>`).join('')}</div>` : `<div class="empty-box"><strong>لا يوجد شركاء مضافون</strong><span>يمكن إضافتهم عند اعتماد الشراكات.</span></div>`}`;
+  }
+
+  function renderContact() {
+    const site = state.data.site;
+    return `${pageHead('بيانات التواصل', 'حدّث قنوات التواصل المباشر الظاهرة في الموقع.')}
+      <form id="contactForm" class="form-panel"><section class="form-section"><div class="form-section-head"><b>01</b><div><h3>واتساب والبريد</h3><p>لا يوجد نموذج داخلي؛ الأزرار تفتح القنوات مباشرة.</p></div></div><div class="form-grid">
+        <label class="field"><span>رقم الجوال</span><input name="phone" dir="ltr" value="${valueAttr(site.phone)}"><small>مثال: +966 55 719 5594</small></label>
+        <label class="field"><span>رقم واتساب</span><input name="whatsapp" dir="ltr" value="${valueAttr(site.whatsapp || site.phone)}"></label>
+        <label class="field"><span>البريد الإلكتروني</span><input name="email" dir="ltr" type="email" value="${valueAttr(site.email)}"></label>
+        <label class="field"><span>المدينة / الموقع</span><input name="city" value="${valueAttr(site.city)}"></label>
+      </div></section></form>
+      <div class="sticky-save"><div class="sticky-save-inner"><span class="unsaved-note">تأكد من صحة رقم واتساب والبريد قبل النشر.</span><button class="button button-primary" data-action="save-contact" type="button">حفظ بيانات التواصل</button></div></div>`;
+  }
+
+  function field(label, name, value = '', options = {}) {
+    const full = options.full ? ' full' : '';
+    const hint = options.hint ? `<small>${escapeHTML(options.hint)}</small>` : '';
+    if (options.type === 'textarea') return `<label class="field${full}"><span>${escapeHTML(label)}</span><textarea name="${name}" ${options.required ? 'required' : ''}>${escapeHTML(value)}</textarea>${hint}</label>`;
+    if (options.type === 'select') return `<label class="field${full}"><span>${escapeHTML(label)}</span><select name="${name}">${options.values.map((item) => `<option value="${escapeHTML(item)}" ${item === value ? 'selected' : ''}>${escapeHTML(item)}</option>`).join('')}</select>${hint}</label>`;
+    return `<label class="field${full}"><span>${escapeHTML(label)}</span><input name="${name}" type="${options.type || 'text'}" value="${valueAttr(value)}" ${options.dir ? `dir="${options.dir}"` : ''} ${options.required ? 'required' : ''}>${hint}</label>`;
+  }
+
+  function uploadControl(inputName, current, label, accept = '*/*') {
+    const isImage = String(current || '').startsWith('data:image') || /\.(png|jpe?g|webp|gif|svg)$/i.test(String(current || ''));
+    return `<div class="field full"><span>${escapeHTML(label)}</span><div class="upload-field"><div class="upload-preview" id="uploadPreview">${current && isImage ? `<img src="${escapeHTML(current)}" alt="">` : current ? 'تم الرفع' : 'لا يوجد ملف'}</div><div class="upload-actions"><strong>${current ? 'الملف الحالي جاهز' : 'اختر ملفًا من جهازك'}</strong><small>الحد الأعلى 12 ميجابايت.</small><button data-action="pick-file" data-target="${inputName}" data-accept="${escapeHTML(accept)}" type="button">اختيار ملف</button><div class="upload-progress" id="uploadProgress"><i></i></div></div></div><input name="${inputName}" id="${inputName}" type="hidden" value="${valueAttr(current)}"></div>`;
+  }
+
+  function openDrawer(type, index = null, extra = {}) {
+    state.drawer = { type, index, extra };
+    const config = drawerConfig(type, index, extra);
+    $('#drawerEyebrow').textContent = config.eyebrow;
+    $('#drawerTitle').textContent = config.title;
+    $('#drawerBody').innerHTML = `<form id="drawerForm" class="form-grid">${config.html}</form>`;
+    $('#saveDrawer').textContent = config.saveLabel || 'حفظ ونشر';
+    $('#drawerBackdrop').classList.remove('is-hidden');
+    $('#editorDrawer').classList.add('is-open');
+    $('#editorDrawer').setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeDrawer() {
+    state.drawer = null;
+    $('#drawerBackdrop').classList.add('is-hidden');
+    $('#editorDrawer').classList.remove('is-open');
+    $('#editorDrawer').setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function drawerConfig(type, index, extra) {
+    if (type === 'program') {
+      const item = index === null ? {} : state.data.programs.programs[index] || {};
+      return { eyebrow: index === null ? 'برنامج جديد' : 'تعديل البرنامج', title: index === null ? 'إضافة نشاط جديد' : item.title, html:
+        field('اسم البرنامج أو النشاط', 'title', item.title, { required: true, full: true }) +
+        field('التصنيف', 'category', item.category || 'برامج قيمية', { type: 'select', values: ['برامج قيمية', 'برامج الممارسين القيميين', 'برامج الناشئة والشباب', 'برامج الأسرة', 'المبادرات الرقمية', 'فعاليات ومناسبات'] }) +
+        field('حالة النشر', 'status', item.status || 'منشور', { type: 'select', values: ['منشور', 'مسودة', 'مكتمل', 'قادم'] }) +
+        field('وصف مختصر للبطاقة', 'summary', item.summary, { type: 'textarea', full: true, required: true }) +
+        field('الشرح الكامل للبرنامج', 'details', item.details || item.description, { type: 'textarea', full: true, hint: 'يظهر داخل صفحة تفاصيل البرنامج.' }) +
+        field('أهداف البرنامج', 'objectives', Array.isArray(item.objectives) ? item.objectives.join('\n') : item.objectives, { type: 'textarea', full: true, hint: 'اكتب كل هدف في سطر مستقل.' }) +
+        field('التاريخ أو الحالة المختصرة', 'meta', item.meta || item.date, { hint: 'مثال: 15 محرم 1448هـ أو التسجيل مفتوح' }) +
+        field('المدة', 'duration', item.duration) +
+        field('الموقع', 'location', item.location) +
+        field('الفئة المستهدفة', 'audience', item.audience) +
+        field('رابط التسجيل الخارجي', 'url', item.url, { type: 'url', dir: 'ltr' }) +
+        uploadControl('image', item.image, 'صورة النشاط', 'image/*') };
+    }
+    if (type === 'member') {
+      const memberType = extra.memberType || state.organizationTab;
+      const item = index === null ? {} : memberList(memberType)[index] || {};
+      let html = field('الاسم الكامل', 'name', item.name, { required: true, full: true });
+      if (memberType === 'assembly') html += field('نوع العضوية', 'membership_type', item.membership_type || 'عضو عامل', { type: 'select', values: ['عضو عامل', 'عضو منتسب', 'عضو فخري', 'عضو مؤسس'] });
+      else html += field(memberType === 'board' ? 'المنصب في المجلس' : 'المسمى الوظيفي', 'position', item.position, { required: memberType === 'executive', full: memberType === 'board' });
+      if (memberType === 'executive') html += field('البريد الإلكتروني', 'email', item.email, { type: 'email', dir: 'ltr' }) + field('رقم التواصل', 'phone', item.phone, { dir: 'ltr' });
+      return { eyebrow: index === null ? 'عضو جديد' : 'تعديل البيانات', title: index === null ? `إضافة ${memberTypeName(memberType)}` : item.name, html };
+    }
+    if (type === 'stat') {
+      const item = index === null ? {} : state.data.impact.statistics[index] || {};
+      return { eyebrow: 'قياس الأثر', title: index === null ? 'إضافة إحصائية' : 'تعديل الإحصائية', html:
+        field('اسم المؤشر', 'label', item.label, { required: true, full: true }) + field('القيمة', 'value', item.value, { required: true }) + field('وحدة القياس', 'unit', item.unit) + field('وصف مختصر', 'summary', item.summary, { type: 'textarea', full: true }) };
+    }
+    if (type === 'impact-report') {
+      const item = index === null ? {} : state.data.impact.reports[index] || {};
+      return { eyebrow: 'تقارير الأثر', title: index === null ? 'رفع تقرير أثر' : 'تعديل تقرير الأثر', html:
+        field('عنوان التقرير', 'title', item.title, { required: true, full: true }) + field('السنة', 'year', item.year) + field('الوصف', 'summary', item.summary, { type: 'textarea', full: true }) + uploadControl('file', item.file, 'ملف التقرير PDF', '.pdf,application/pdf') };
+    }
+    if (type === 'document') {
+      const item = index === null ? {} : state.data.governance.documents[index] || {};
+      const financial = extra.financial || isFinancial(item.category);
+      const values = financial ? ['التقارير المالية السنوية', 'القوائم المالية'] : ['شهادة الترخيص', 'السياسات واللوائح', 'أدلة ونماذج الحوكمة'];
+      return { eyebrow: financial ? 'التقارير المالية' : 'ملفات الحوكمة', title: index === null ? 'رفع ملف جديد' : item.title, html:
+        field('عنوان الملف', 'title', item.title, { required: true, full: true }) + field('التصنيف', 'category', item.category || values[0], { type: 'select', values }) + field('السنة', 'year', item.year) + field('وصف مختصر', 'summary', item.summary, { type: 'textarea', full: true }) + uploadControl('file', item.file, 'الملف PDF', '.pdf,application/pdf') };
+    }
+    if (type === 'news') {
+      const item = index === null ? {} : state.data.media.news[index] || {};
+      return { eyebrow: 'المركز الإعلامي', title: index === null ? 'إضافة خبر' : 'تعديل الخبر', html:
+        field('عنوان الخبر', 'title', item.title, { required: true, full: true }) + field('تاريخ النشر', 'date', item.date ? String(item.date).slice(0,10) : '', { type: 'date' }) + field('رابط اختياري', 'link', item.link, { type: 'url', dir: 'ltr' }) + field('ملخص الخبر', 'summary', item.summary, { type: 'textarea', full: true }) + field('نص الخبر الكامل', 'content', item.content, { type: 'textarea', full: true, hint: 'يظهر داخل صفحة تفاصيل الخبر.' }) + uploadControl('image', item.image, 'صورة الخبر', 'image/*') };
+    }
+    if (type === 'gallery') {
+      const item = index === null ? {} : state.data.media.gallery[index] || {};
+      return { eyebrow: 'ألبوم الصور', title: index === null ? 'إضافة صورة' : 'تعديل الصورة', html:
+        field('عنوان الصورة', 'title', item.title, { full: true }) + field('وصف الصورة', 'caption', item.caption, { type: 'textarea', full: true }) + uploadControl('image', item.image, 'الصورة', 'image/*') };
+    }
+    if (type === 'media-document') {
+      const item = index === null ? {} : state.data.media.documents[index] || {};
+      return { eyebrow: 'الملفات الإعلامية', title: index === null ? 'رفع ملف إعلامي' : 'تعديل الملف الإعلامي', html:
+        field('عنوان الملف', 'title', item.title, { required: true, full: true }) + field('السنة', 'year', item.year) + field('الوصف', 'summary', item.summary, { type: 'textarea', full: true }) + uploadControl('file', item.file, 'الملف PDF', '.pdf,application/pdf') };
+    }
+    if (type === 'partner') {
+      const item = index === null ? {} : state.data.partners.partners[index] || {};
+      return { eyebrow: 'شركاء الجمعية', title: index === null ? 'إضافة شريك' : 'تعديل الشريك', html:
+        field('اسم الجهة', 'name', item.name, { required: true, full: true }) + field('رابط الموقع', 'url', item.url, { type: 'url', dir: 'ltr', full: true }) + field('وصف مختصر', 'summary', item.summary, { type: 'textarea', full: true }) + uploadControl('logo', item.logo, 'شعار الجهة', 'image/*') };
+    }
+    return { eyebrow: 'إضافة', title: 'عنصر جديد', html: '' };
+  }
+
+  function formObject(form) { return Object.fromEntries(new FormData(form).entries()); }
+
+  async function saveDrawer() {
+    const context = state.drawer;
+    const form = $('#drawerForm');
+    if (!context || !form || !form.reportValidity()) return;
+    const button = $('#saveDrawer');
+    setBusy(button, true);
+    try {
+      const values = formObject(form);
+      if ((context.type === 'document' || context.type === 'impact-report' || context.type === 'media-document') && !values.file) {
+        toast('الملف مطلوب', 'اختر ملف PDF ثم انتظر اكتمال الرفع قبل الحفظ.', 'error');
+        setBusy(button, false);
+        return;
+      }
+      if (context.type === 'gallery' && !values.image) {
+        toast('الصورة مطلوبة', 'اختر صورة ثم انتظر اكتمال الرفع قبل الحفظ.', 'error');
+        setBusy(button, false);
+        return;
+      }
+      if (context.type === 'program') {
+        values.objectives = String(values.objectives || '').split(/\n/).map((value) => value.trim()).filter(Boolean);
+        const item = Object.assign({}, context.index === null ? { id: uid('program') } : state.data.programs.programs[context.index], values);
+        if (context.index === null) state.data.programs.programs.push(item); else state.data.programs.programs[context.index] = item;
+        await writeRepoJSON('programs', state.data.programs, context.index === null ? `إضافة نشاط: ${item.title}` : `تحديث نشاط: ${item.title}`);
+      } else if (context.type === 'member') {
+        const type = context.extra.memberType;
+        const list = memberList(type);
+        const item = Object.assign({}, context.index === null ? { id: uid('member') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('about', state.data.about, `${context.index === null ? 'إضافة' : 'تحديث'} عضو: ${item.name}`);
+      } else if (context.type === 'stat') {
+        const list = state.data.impact.statistics;
+        const item = Object.assign({}, context.index === null ? { id: uid('stat') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('impact', state.data.impact, `${context.index === null ? 'إضافة' : 'تحديث'} إحصائية: ${item.label}`);
+      } else if (context.type === 'impact-report') {
+        const list = state.data.impact.reports;
+        const item = Object.assign({}, context.index === null ? { id: uid('report') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('impact', state.data.impact, `${context.index === null ? 'إضافة' : 'تحديث'} تقرير أثر: ${item.title}`);
+      } else if (context.type === 'document') {
+        const list = state.data.governance.documents;
+        const item = Object.assign({}, context.index === null ? { id: uid('document') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('governance', state.data.governance, `${context.index === null ? 'إضافة' : 'تحديث'} ملف: ${item.title}`);
+      } else if (context.type === 'news') {
+        const list = state.data.media.news;
+        const item = Object.assign({}, context.index === null ? { id: uid('news') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('media', state.data.media, `${context.index === null ? 'إضافة' : 'تحديث'} خبر: ${item.title}`);
+      } else if (context.type === 'gallery') {
+        const list = state.data.media.gallery;
+        const item = Object.assign({}, context.index === null ? { id: uid('image') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('media', state.data.media, `${context.index === null ? 'إضافة' : 'تحديث'} صورة`);
+      } else if (context.type === 'media-document') {
+        const list = state.data.media.documents;
+        const item = Object.assign({}, context.index === null ? { id: uid('media-document') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('media', state.data.media, `${context.index === null ? 'إضافة' : 'تحديث'} ملف إعلامي: ${item.title}`);
+      } else if (context.type === 'partner') {
+        const list = state.data.partners.partners;
+        const item = Object.assign({}, context.index === null ? { id: uid('partner') } : list[context.index], values);
+        if (context.index === null) list.push(item); else list[context.index] = item;
+        await writeRepoJSON('partners', state.data.partners, `${context.index === null ? 'إضافة' : 'تحديث'} شريك: ${item.name}`);
+      }
+      updateCounts();
+      closeDrawer();
+      renderPage();
+      toast('تم الحفظ بنجاح', demoMode ? 'حفظ مؤقت في وضع المعاينة.' : 'بدأ Netlify نشر التحديث على الموقع.', 'success');
+    } catch (error) {
+      console.error(error);
+      toast('تعذر الحفظ', error.message, 'error');
+    } finally { setBusy(button, false); }
+  }
+
+  async function saveSite(button) {
+    const form = $('#siteForm');
+    if (!form?.reportValidity()) return;
+    const values = formObject(form);
+    const site = Object.assign({}, state.data.site, { name: values.name, city: values.city, description: values.description });
+    const goals = $$('[data-goal-input]').map((input) => input.value.trim()).filter(Boolean);
+    const about = Object.assign({}, state.data.about, { summary: values.summary, vision: values.vision, mission: values.mission, geographic_scope: values.geographic_scope, organization_chart: values.organization_chart || state.data.about.organization_chart || '', goals });
+    setBusy(button, true);
+    try {
+      await writeRepoJSON('site', site, 'تحديث بيانات الجمعية');
+      await writeRepoJSON('about', about, 'تحديث الخريطة الاستراتيجية للجمعية');
+      state.data.site = site; state.data.about = about;
+      toast('تم حفظ بيانات الجمعية', 'سيظهر التحديث بعد اكتمال النشر.', 'success');
+      renderPage();
+    } catch (error) { toast('تعذر الحفظ', error.message, 'error'); }
+    finally { setBusy(button, false); }
+  }
+
+  async function saveContact(button) {
+    const form = $('#contactForm');
+    if (!form?.reportValidity()) return;
+    const values = formObject(form);
+    const site = Object.assign({}, state.data.site, values);
+    setBusy(button, true);
+    try {
+      await writeRepoJSON('site', site, 'تحديث بيانات التواصل');
+      state.data.site = site;
+      toast('تم حفظ بيانات التواصل', 'تحقق من الموقع بعد اكتمال النشر.', 'success');
+    } catch (error) { toast('تعذر الحفظ', error.message, 'error'); }
+    finally { setBusy(button, false); }
+  }
+
+  function askDelete(title, message, callback) {
+    $('#confirmTitle').textContent = title;
+    $('#confirmMessage').textContent = message;
+    state.pendingConfirm = callback;
+    $('#confirmDialog').classList.remove('is-hidden');
+  }
+  function closeConfirm() { state.pendingConfirm = null; $('#confirmDialog').classList.add('is-hidden'); }
+
+  async function deleteItem(kind, index, extra = {}) {
+    let key, list, label;
+    if (kind === 'program') { key = 'programs'; list = state.data.programs.programs; label = list[index]?.title; }
+    if (kind === 'member') { key = 'about'; list = memberList(extra.memberType); label = list[index]?.name; }
+    if (kind === 'stat') { key = 'impact'; list = state.data.impact.statistics; label = list[index]?.label; }
+    if (kind === 'impact-report') { key = 'impact'; list = state.data.impact.reports; label = list[index]?.title; }
+    if (kind === 'document') { key = 'governance'; list = state.data.governance.documents; label = list[index]?.title; }
+    if (kind === 'news') { key = 'media'; list = state.data.media.news; label = list[index]?.title; }
+    if (kind === 'gallery') { key = 'media'; list = state.data.media.gallery; label = list[index]?.title || 'صورة'; }
+    if (kind === 'media-document') { key = 'media'; list = state.data.media.documents; label = list[index]?.title; }
+    if (kind === 'partner') { key = 'partners'; list = state.data.partners.partners; label = list[index]?.name; }
+    if (!list || !list[index]) return;
+    askDelete('تأكيد الحذف', `سيتم حذف «${label}» من الموقع. هل تريد المتابعة؟`, async () => {
+      const removed = list.splice(index, 1)[0];
+      closeConfirm();
+      renderPage();
+      try {
+        await writeRepoJSON(key, state.data[key], `حذف ${label} من لوحة الإدارة`);
+        updateCounts();
+        toast('تم الحذف', 'تم تحديث ملفات الموقع.', 'success');
+      } catch (error) {
+        list.splice(index, 0, removed);
+        renderPage();
+        toast('تعذر الحذف', error.message, 'error');
+      }
+    });
+  }
+
+  async function handleFileSelection(file) {
+    const target = state.uploadTarget;
+    if (!target || !file) return;
+    const progress = $('#uploadProgress');
+    if (progress) progress.style.display = 'block';
+    try {
+      const prefix = target.includes('image') || target.includes('logo') ? 'image' : 'document';
+      const path = await uploadAsset(file, prefix);
+      const input = $(`#${CSS.escape(target)}`);
+      if (input) input.value = path;
+      const preview = $('#uploadPreview');
+      if (preview) preview.innerHTML = file.type.startsWith('image/') ? `<img src="${escapeHTML(path)}" alt="">` : 'تم الرفع ✓';
+      toast('تم رفع الملف', 'اضغط «حفظ ونشر» لإكمال العملية.', 'success');
+    } catch (error) { toast('تعذر رفع الملف', error.message, 'error'); }
+    finally { if (progress) progress.style.display = 'none'; state.uploadTarget = null; $('#globalFileInput').value = ''; }
+  }
+
+  function openSidebar() { $('#sidebar').classList.add('is-open'); }
+  function closeSidebar() { $('#sidebar').classList.remove('is-open'); }
+
+  document.addEventListener('click', async (event) => {
+    const pageButton = event.target.closest('[data-page]');
+    if (pageButton) { setPage(pageButton.dataset.page); return; }
+    const actionEl = event.target.closest('[data-action]');
+    if (!actionEl) return;
+    const action = actionEl.dataset.action;
+
+    if (action === 'new-program') openDrawer('program');
+    else if (action === 'edit-program') openDrawer('program', Number(actionEl.dataset.index));
+    else if (action === 'delete-program') deleteItem('program', Number(actionEl.dataset.index));
+    else if (action === 'filter-programs') { state.programFilter = actionEl.dataset.value; renderPage(); }
+    else if (action === 'organization-tab') { state.organizationTab = actionEl.dataset.value; renderPage(); }
+    else if (action === 'new-member') openDrawer('member', null, { memberType: actionEl.dataset.memberType || state.organizationTab });
+    else if (action === 'edit-member') openDrawer('member', Number(actionEl.dataset.index), { memberType: actionEl.dataset.memberType });
+    else if (action === 'delete-member') deleteItem('member', Number(actionEl.dataset.index), { memberType: actionEl.dataset.memberType });
+    else if (action === 'new-stat') openDrawer('stat');
+    else if (action === 'edit-stat') openDrawer('stat', Number(actionEl.dataset.index));
+    else if (action === 'delete-stat') deleteItem('stat', Number(actionEl.dataset.index));
+    else if (action === 'new-impact-report') openDrawer('impact-report');
+    else if (action === 'edit-impact-report') openDrawer('impact-report', Number(actionEl.dataset.index));
+    else if (action === 'delete-impact-report') deleteItem('impact-report', Number(actionEl.dataset.index));
+    else if (action === 'new-document') openDrawer('document', null, { financial: false });
+    else if (action === 'new-financial') openDrawer('document', null, { financial: true });
+    else if (action === 'edit-document') openDrawer('document', Number(actionEl.dataset.index), { financial: state.currentPage === 'financial' });
+    else if (action === 'delete-document') deleteItem('document', Number(actionEl.dataset.index));
+    else if (action === 'new-news') openDrawer('news');
+    else if (action === 'edit-news') openDrawer('news', Number(actionEl.dataset.index));
+    else if (action === 'delete-news') deleteItem('news', Number(actionEl.dataset.index));
+    else if (action === 'new-gallery') openDrawer('gallery');
+    else if (action === 'edit-gallery') openDrawer('gallery', Number(actionEl.dataset.index));
+    else if (action === 'delete-gallery') deleteItem('gallery', Number(actionEl.dataset.index));
+    else if (action === 'new-media-document') openDrawer('media-document');
+    else if (action === 'edit-media-document') openDrawer('media-document', Number(actionEl.dataset.index));
+    else if (action === 'delete-media-document') deleteItem('media-document', Number(actionEl.dataset.index));
+    else if (action === 'new-partner') openDrawer('partner');
+    else if (action === 'edit-partner') openDrawer('partner', Number(actionEl.dataset.index));
+    else if (action === 'delete-partner') deleteItem('partner', Number(actionEl.dataset.index));
+    else if (action === 'save-site') saveSite(actionEl);
+    else if (action === 'save-contact') saveContact(actionEl);
+    else if (action === 'add-goal') {
+      const row = document.createElement('div'); row.className = 'repeater-row'; row.innerHTML = `<input data-goal-input type="text" placeholder="اكتب هدفًا استراتيجيًا"><button data-action="remove-goal" type="button" aria-label="حذف">×</button>`;
+      actionEl.before(row); $('input', row).focus();
+    } else if (action === 'remove-goal') actionEl.closest('.repeater-row')?.remove();
+    else if (action === 'pick-file') {
+      state.uploadTarget = actionEl.dataset.target;
+      const input = $('#globalFileInput'); input.accept = actionEl.dataset.accept || '*/*'; input.click();
+    }
+  });
+
+  document.addEventListener('input', (event) => {
+    if (event.target.id === 'programSearch') {
+      state.programSearch = event.target.value;
+      clearTimeout(window.__atharSearchTimer);
+      window.__atharSearchTimer = setTimeout(renderPage, 150);
+    }
+  });
+
+  $('#globalFileInput').addEventListener('change', (event) => handleFileSelection(event.target.files?.[0]));
+  $('#saveDrawer').addEventListener('click', saveDrawer);
+  $('#closeDrawer').addEventListener('click', closeDrawer);
+  $('#cancelDrawer').addEventListener('click', closeDrawer);
+  $('#drawerBackdrop').addEventListener('click', closeDrawer);
+  $('#cancelConfirm').addEventListener('click', closeConfirm);
+  $('#approveConfirm').addEventListener('click', () => state.pendingConfirm?.());
+  $('#openSidebar').addEventListener('click', openSidebar);
+  $('#closeSidebar').addEventListener('click', closeSidebar);
+  $('#refreshButton').addEventListener('click', async (event) => {
+    setBusy(event.currentTarget, true, 'جاري التحديث…');
+    try { await loadAll({ quiet: true }); toast('تم تحديث البيانات', 'تم جلب أحدث نسخة من GitHub.', 'success'); }
+    finally { setBusy(event.currentTarget, false); }
+  });
+  $('#loginButton').addEventListener('click', () => window.netlifyIdentity?.open('login'));
+  $('#logoutButton').addEventListener('click', () => window.netlifyIdentity?.logout());
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') { closeDrawer(); closeConfirm(); closeSidebar(); } });
+
+  function showApp(user) {
+    state.authUser = user;
+    $('#loginScreen').classList.add('is-hidden');
+    $('#adminApp').classList.remove('is-hidden');
+    const email = user?.email || (demoMode ? 'demo@athar.local' : '—');
+    const name = user?.user_metadata?.full_name || user?.user_metadata?.name || 'مسؤول الموقع';
+    $('#userName').textContent = name;
+    $('#userEmail').textContent = email;
+    $('#userInitial').textContent = initials(name);
+    loadAll();
+  }
+  function showLogin() {
+    $('#adminApp').classList.add('is-hidden');
+    $('#loginScreen').classList.remove('is-hidden');
+  }
+
+  if (demoMode) {
+    showApp(null);
+  } else if (window.netlifyIdentity) {
+    window.netlifyIdentity.on('init', (user) => user ? showApp(user) : showLogin());
+    window.netlifyIdentity.on('login', (user) => { window.netlifyIdentity.close(); showApp(user); });
+    window.netlifyIdentity.on('logout', showLogin);
+    window.netlifyIdentity.init();
+  } else {
+    showLogin();
+    toast('تعذر تحميل تسجيل الدخول', 'تحقق من الاتصال بالإنترنت.', 'error');
+  }
+})();

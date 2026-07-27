@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+    <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#08182f"/><stop offset="1" stop-color="#274875"/></linearGradient></defs>
+    <rect width="1600" height="900" fill="url(#g)"/>
+    <circle cx="230" cy="160" r="250" fill="none" stroke="#bc9351" stroke-opacity=".28" stroke-width="3"/>
+    <circle cx="1380" cy="770" r="340" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="3"/>
+    <path d="M1260 130c85 0 155 70 155 155s-70 155-155 155-155-70-155-155 70-155 155-155Z" fill="#bc9351" fill-opacity=".14"/>
+    <g font-family="Noto Sans Arabic, Arial" text-anchor="middle" direction="rtl">
+      <text x="800" y="405" fill="#fff" font-size="84" font-weight="800">خبر تجريبي</text>
+      <text x="800" y="490" fill="#d8be8c" font-size="34" font-weight="600">صورة المركز الإعلامي</text>
+      <text x="800" y="610" fill="#fff" fill-opacity=".58" font-size="24">ملف تجريبي للمعاينة - يُحذف بعد إضافة المحتوى المعتمد</text>
+    </g>
+    <rect x="620" y="715" width="360" height="6" rx="3" fill="#bc9351"/>
+    </svg>
