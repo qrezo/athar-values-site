@@ -1904,3 +1904,9 @@ body.lightbox-open { overflow: hidden; }
     padding: 8px;
   }
 }
+
+/* Desktop navigation alignment: keep the menu next to the logo on the right. */
+@media (min-width: 1181px) {
+  .main-nav { flex: 1; }
+  .nav-list { justify-content: flex-start; }
+}
