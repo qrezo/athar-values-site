@@ -1884,3 +1884,23 @@ body.lightbox-open { overflow: hidden; }
 }
 /* Keep footer links compact on every page; the survey now lives on Contact. */
 .footer-links--grid > a[href*="satisfaction-survey"] { display: none !important; }
+
+/* Organizational chart: compact mobile treatment matching assembly and board. */
+.mobile-org-poster { display: none; }
+.mobile-org-poster-preview {
+  object-fit: contain;
+  object-position: center;
+  background: #fffdf8;
+}
+
+/* The desktop header no longer shows the quick email/WhatsApp pills. */
+.header-contact-actions { display: none !important; }
+
+@media (max-width: 768px) {
+  .organization-section .org-chart-shell { display: none !important; }
+  .mobile-org-poster { display: grid; }
+  .mobile-org-poster-preview {
+    max-height: 210px;
+    padding: 8px;
+  }
+}
