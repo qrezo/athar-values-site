@@ -1838,3 +1838,49 @@ body.lightbox-open { overflow: hidden; }
   .survey-card--contact { align-items: stretch; }
   .survey-card--contact .button { width: 100%; justify-content: center; }
 }
+
+
+/* Contact page simplification and reliable mobile image actions */
+.contact-heading-simple { margin-bottom: 28px; }
+.contact-heading-simple h2 { margin-bottom: 0; }
+.direct-contact-grid--simple { max-width: 940px; margin-inline: auto; }
+.direct-contact-grid--simple .direct-contact-card {
+  min-height: 240px;
+  justify-content: center;
+  align-items: center;
+  padding: 32px;
+  text-align: center;
+}
+.direct-contact-grid--simple .direct-contact-icon { margin-bottom: 20px; }
+.direct-contact-grid--simple .direct-contact-card h3 { margin: 0 0 10px; }
+.direct-contact-grid--simple .direct-contact-card b { margin-top: 18px; }
+.mobile-people-poster-preview {
+  width: 100%;
+  max-height: 190px;
+  object-fit: cover;
+  object-position: center;
+  border: 1px solid rgba(188,147,81,.35);
+  border-radius: 15px;
+  background: #fff;
+}
+.mobile-people-poster-actions,
+.mobile-people-poster-actions .button {
+  position: relative;
+  z-index: 3;
+  pointer-events: auto;
+}
+.mobile-people-poster-actions .button[aria-busy="true"] { opacity: .72; }
+
+@media (max-width: 768px) {
+  .direct-contact-section { padding-block: 68px; }
+  .contact-heading-simple { margin-bottom: 22px; text-align: center; }
+  .direct-contact-grid--simple { gap: 14px; }
+  .direct-contact-grid--simple .direct-contact-card {
+    min-height: 190px;
+    padding: 25px 20px;
+  }
+  .mobile-people-poster { padding: 16px; gap: 13px; }
+  .mobile-people-poster h3 { margin: 0; }
+}
+/* Keep footer links compact on every page; the survey now lives on Contact. */
+.footer-links--grid > a[href*="satisfaction-survey"] { display: none !important; }

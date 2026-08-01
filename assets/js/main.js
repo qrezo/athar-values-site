@@ -181,4 +181,39 @@
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && document.querySelector('.site-lightbox')) closeLightbox();
   });
+
+
+  // Make image downloads reliable on mobile. Falls back to opening the image
+  // when the browser does not support programmatic downloads.
+  document.addEventListener('click', async (event) => {
+    const link = event.target.closest('[data-image-download]');
+    if (!link) return;
+
+    event.preventDefault();
+    const originalText = link.textContent;
+    link.setAttribute('aria-busy', 'true');
+    link.textContent = 'جاري التحميل…';
+
+    try {
+      const response = await fetch(link.href, { cache: 'no-store' });
+      if (!response.ok) throw new Error('Image download failed');
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = objectUrl;
+      downloadLink.download = link.getAttribute('download') || 'image.png';
+      downloadLink.style.display = 'none';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+        downloadLink.remove();
+      }, 1500);
+    } catch (error) {
+      window.location.href = link.href;
+    } finally {
+      link.removeAttribute('aria-busy');
+      link.textContent = originalText;
+    }
+  });
 })();
