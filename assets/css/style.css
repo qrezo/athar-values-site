@@ -141,7 +141,7 @@ body.menu-open .nav-toggle::after { transform: translateY(-7px) rotate(-45deg); 
     radial-gradient(circle at 75% 0%, rgba(42,75,121,.34), transparent 34rem),
     linear-gradient(135deg, var(--navy-dark) 0%, var(--navy-deep) 48%, #0b1d37 100%);
 }
-.hero-home::before { content: ""; position: absolute; inset: 0; opacity: .1; background-image: url('../images/fingerprint.svg'); background-repeat: no-repeat; background-size: 520px; background-position: -145px 104%; }
+.hero-home::before { content: ""; position: absolute; inset: 0; opacity: .1; background-image: url('../images/fingerprint.svg'); background-repeat: no-repeat; background-size: 390px; background-position: -56px 92%; }
 .hero-home::after { content: ""; position: absolute; top: -180px; left: -80px; width: 560px; height: 560px; border-radius: 50%; border: 1px solid rgba(188,147,81,.16); box-shadow: 0 0 0 70px rgba(188,147,81,.02), 0 0 0 150px rgba(255,255,255,.015); }
 .hero-grid { position: relative; z-index: 2; min-height: 620px; display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 76px; padding-block: 72px 105px; }
 .hero-copy { max-width: 680px; }
@@ -1495,3 +1495,217 @@ body.lightbox-open { overflow: hidden; }
   .hero-copy h1 { font-size: 38px; }
   .footer-links--grid { grid-template-columns: 1fr; }
 }
+
+
+/* =========================================================
+   Mobile menu V6 — compact sheet with balanced contact block
+   Fixes the large empty gap between navigation and contact.
+   ========================================================= */
+@media (max-width: 1180px) {
+  body.menu-open::after {
+    content: "";
+    position: fixed;
+    z-index: 900;
+    inset: 88px 0 0;
+    background: rgba(3, 10, 20, .58);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+  }
+
+  .main-nav {
+    bottom: auto;
+    height: auto;
+    max-height: calc(100dvh - 104px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 18px 24px 22px;
+    border-radius: 0 0 28px 28px;
+    background: linear-gradient(180deg, #08182f 0%, #0b1d38 100%);
+    box-shadow: 0 24px 65px rgba(0, 0, 0, .34);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .nav-list {
+    flex: 0 0 auto;
+    gap: 4px;
+  }
+
+  .nav-link,
+  .dropdown-toggle {
+    min-height: 48px;
+    padding-inline: 15px;
+  }
+
+  .mobile-menu-contact {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin: 16px 0 0;
+    padding: 15px 0 0;
+    border-top: 1px solid rgba(255, 255, 255, .11);
+    background: none;
+  }
+
+  .mobile-menu-contact-title {
+    margin-bottom: 8px;
+  }
+
+  .mobile-menu-contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .mobile-menu-contact-grid > a {
+    min-height: 60px;
+    padding: 9px 11px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  body.menu-open::after { inset-block-start: 76px; }
+
+  .main-nav {
+    top: 76px;
+    max-height: calc(100dvh - 88px);
+    padding: 14px 15px 18px;
+    border-radius: 0 0 22px 22px;
+  }
+
+  .nav-list { gap: 3px; }
+
+  .nav-link,
+  .dropdown-toggle {
+    min-height: 46px;
+    padding-inline: 14px;
+    font-size: 13px;
+  }
+
+  .mobile-menu-contact {
+    margin-top: 12px;
+    padding-top: 12px;
+  }
+
+  .mobile-menu-contact-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .mobile-menu-contact-grid > a {
+    min-height: 58px;
+    gap: 8px;
+    padding: 8px 9px;
+  }
+
+  .mobile-menu-contact-icon {
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+
+  .mobile-menu-contact-grid small { font-size: 8px; }
+  .mobile-menu-contact-grid strong { font-size: 9px; line-height: 1.4; }
+}
+
+@media (max-width: 350px) {
+  .mobile-menu-contact-grid { grid-template-columns: 1fr; }
+}
+
+/* =========================================================
+   Mobile menu V7 — use the full drawer width for navigation.
+   Prevents the implicit grid column from shrinking to content width.
+   ========================================================= */
+@media (max-width: 1180px) {
+  .main-nav {
+    align-items: stretch;
+  }
+
+  .main-nav .nav-list {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    grid-template-columns: minmax(0, 1fr);
+    justify-content: stretch;
+    justify-items: stretch;
+  }
+
+  .main-nav .nav-list > li,
+  .main-nav .dropdown {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .main-nav .nav-link,
+  .main-nav .dropdown-toggle {
+    width: 100%;
+    justify-content: space-between;
+    text-align: right;
+  }
+}
+
+
+/* =========================================================
+   Launch-ready content and approved identity refinements
+   ========================================================= */
+.strategic-objectives-section { background: #f7f1e7; }
+.strategic-objectives-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 22px; }
+.objective-pillar { overflow: hidden; border: 1px solid rgba(188,147,81,.35); border-radius: 26px; background: rgba(255,253,248,.92); box-shadow: var(--shadow-soft); }
+.objective-pillar-head { min-height: 155px; display: flex; align-items: flex-start; gap: 16px; padding: 28px; color: #fff; background: linear-gradient(145deg, #102d56, #0b2344); }
+.objective-pillar-head > span { flex: 0 0 auto; display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid rgba(216,190,140,.55); border-radius: 50%; color: var(--gold-light); font-size: 10px; font-weight: 900; }
+.objective-pillar-head h3 { margin: 0 0 9px; color: #fff; font-size: 22px; }
+.objective-pillar-head p { margin: 0; color: rgba(255,255,255,.7); font-size: 11.5px; line-height: 1.9; }
+.objective-items { display: grid; gap: 13px; padding: 22px; }
+.objective-items > div { position: relative; min-height: 100px; display: flex; align-items: center; padding: 20px 24px 20px 20px; border: 1px solid var(--line); border-radius: 18px; background: #fff; font-family: var(--heading-font); font-size: 14px; font-weight: 700; line-height: 1.8; }
+.objective-items > div::before { content: ""; position: absolute; inset-inline-start: 0; top: 20px; bottom: 20px; width: 4px; border-radius: 99px; background: var(--gold); }
+.board-term { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-top: 14px; padding: 14px; border: 1px solid rgba(188,147,81,.34); border-radius: 18px; background: var(--ivory-2); }
+.board-term > div { display: grid; gap: 2px; padding: 10px 13px; border-radius: 12px; background: rgba(255,255,255,.7); }
+.board-term small { color: var(--gold); font-size: 9px; font-weight: 800; }
+.board-term strong { color: var(--navy); font-size: 13px; }
+#cms-executive-members:has(> article:only-child) { grid-template-columns: minmax(280px, 560px); justify-content: center; }
+.impact-coming { padding-bottom: 20px; }
+.impact-coming-card { min-height: 190px; display: grid; place-items: center; gap: 5px; padding: 30px; border: 1px solid rgba(188,147,81,.35); border-radius: 28px; background: linear-gradient(145deg, #102d56, #0b2344); box-shadow: var(--shadow); text-align: center; }
+.impact-coming-card span { color: var(--gold-light); font-size: 13px; font-weight: 800; }
+.impact-coming-card strong { color: #fff; font-family: var(--heading-font); font-size: clamp(38px,7vw,72px); }
+.survey-section { padding-top: 20px; }
+.survey-card { display: flex; align-items: center; justify-content: space-between; gap: 30px; padding: 38px 42px; border: 1px solid rgba(188,147,81,.35); border-radius: 28px; background: #fff; box-shadow: var(--shadow-soft); }
+.survey-card h2 { margin-bottom: 10px; font-size: clamp(24px,3vw,38px); }
+.survey-card p { margin: 0; color: var(--muted); }
+.document-columns { grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.document-columns > article { min-width: 0; padding: 28px; }
+.resource-list { max-height: 940px; overflow-y: auto; padding-inline-end: 5px; scrollbar-width: thin; scrollbar-color: var(--gold) transparent; }
+.resource-copy { min-width: 0; }
+.resource-card strong { line-height: 1.75; }
+.hero-home::before { opacity: .12; }
+
+@media (max-width: 1180px) {
+  .strategic-objectives-grid, .document-columns { grid-template-columns: 1fr; }
+  .resource-list { max-height: none; overflow: visible; padding-inline-end: 0; }
+  .brand img { width: 59px; height: 72px; }
+  .navbar { min-height: 88px; }
+  .main-nav { top: 88px; max-height: calc(100dvh - 100px); }
+  body.menu-open::after { inset-block-start: 88px; }
+}
+@media (max-width: 680px) {
+  .objective-pillar-head { min-height: auto; padding: 23px; }
+  .objective-items { padding: 16px; }
+  .objective-items > div { min-height: 82px; font-size: 12.5px; }
+  .board-term { grid-template-columns: 1fr; }
+  .survey-card { align-items: stretch; flex-direction: column; padding: 28px 24px; }
+  .survey-card .button { width: 100%; }
+  .brand img { width: 57px; height: 70px; }
+  .navbar { min-height: 86px; }
+  .main-nav { top: 86px; max-height: calc(100dvh - 98px); }
+  body.menu-open::after { inset-block-start: 86px; }
+  .hero-home::before { background-size: 270px; background-position: -74px 92%; }
+}
+
+
+/* Launch: honor native hidden attribute */
+[hidden] { display: none !important; }
+
+/* Launch: show official governance document titles in full */
+.document-columns .resource-copy strong { white-space: normal; overflow: visible; text-overflow: clip; font-size: 11.5px; line-height: 1.65; }
+.document-columns .resource-card { align-items: start; }
