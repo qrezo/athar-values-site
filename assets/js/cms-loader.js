@@ -81,18 +81,54 @@
     });
   }
 
-  function memberRows(items, type) {
+  const personIcon = `<svg aria-hidden="true" class="profile-person-icon" viewBox="0 0 64 64"><circle cx="32" cy="21" r="10"></circle><path d="M15 53c1.8-11 8-17 17-17s15.2 6 17 17"></path></svg>`;
+
+  function memberRoleClass(role) {
+    if (/رئيس مجلس الإدارة/.test(role || '')) return ' is-president';
+    if (/نائب رئيس مجلس الإدارة/.test(role || '')) return ' is-vice';
+    if (/عضو مجلس الإدارة/.test(role || '')) return ' is-board-member';
+    return ' is-assembly-member';
+  }
+
+  function assemblyCards(items) {
     return items.map((item, index) => {
-      const secondary = type === 'assembly' ? item.membership_type : item.position;
-      return `<article class="member-row" data-reveal><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHTML(item.name)}</strong>${secondary ? `<small>${escapeHTML(secondary)}</small>` : ''}</div></article>`;
+      const role = item.membership_type || item.position || 'عضو الجمعية العمومية';
+      return `<article class="assembly-member-card${memberRoleClass(role)}" data-reveal>
+        <div class="profile-icon-wrap">${personIcon}</div>
+        <h3>${escapeHTML(item.name)}</h3>
+        <p>${escapeHTML(role)}</p>
+      </article>`;
     }).join('');
   }
 
+  function boardShowcase(items, termStart, termDuration) {
+    const president = items[0];
+    const others = items.slice(1);
+    const presidentMarkup = president ? `<article class="board-president-card" data-reveal>
+      <div class="profile-icon-wrap profile-icon-wrap--gold">${personIcon}</div>
+      <h3>${escapeHTML(president.name)}</h3>
+      <span>${escapeHTML(president.position || 'رئيس مجلس الإدارة')}</span>
+    </article>` : '';
+    const membersMarkup = others.map((item, index) => `<article class="board-member-card${index === 0 ? ' is-vice' : ''}" data-reveal>
+      <div class="profile-icon-wrap${index === 0 ? ' profile-icon-wrap--solid' : ''}">${personIcon}</div>
+      <h3>${escapeHTML(item.name)}</h3>
+      <p>${escapeHTML(item.position || 'عضو مجلس الإدارة')}</p>
+    </article>`).join('');
+    const term = (termStart || termDuration) ? `<div class="board-term-showcase">
+      ${termStart ? `<div><small>تاريخ بداية الدورة</small><strong>${escapeHTML(termStart)}</strong></div>` : ''}
+      ${termDuration ? `<div><small>مدة الدورة</small><strong>${escapeHTML(termDuration)}</strong></div>` : ''}
+    </div>` : '';
+    return `<div class="board-showcase">${presidentMarkup}<div class="board-divider" aria-hidden="true"><span></span></div><div class="board-members-grid">${membersMarkup}</div>${term}</div>`;
+  }
+
   function executiveCards(items) {
-    return items.map((item, index) => {
-      const email = item.email ? `<a href="mailto:${escapeHTML(item.email)}">${escapeHTML(item.email)}</a>` : '';
-      const phone = item.phone ? `<a href="${phoneHref(item.phone)}" dir="ltr">${escapeHTML(item.phone)}</a>` : '';
-      return `<article class="people-contact" data-reveal><div class="avatar-placeholder">${String(index + 1).padStart(2, '0')}</div><h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.position || '')}</p>${email}${phone}</article>`;
+    return items.map((item) => {
+      const email = item.email ? `<a class="executive-contact-item" href="mailto:${escapeHTML(item.email)}"><span class="executive-contact-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3.5 6.5h17v11h-17z"></path><path d="m4 7 8 6 8-6"></path></svg></span><span><small>البريد الإلكتروني</small><strong>${escapeHTML(item.email)}</strong></span></a>` : '';
+      const phone = item.phone ? `<a class="executive-contact-item" href="${phoneHref(item.phone)}"><span class="executive-contact-icon"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7.2 3.8 10 7.3 8.4 9.4c1.2 2.6 3.3 4.7 5.9 5.9l2.1-1.6 3.5 2.8c.4.3.5.8.3 1.2-.8 1.8-2.5 2.9-4.5 2.8C9.4 20.1 3.9 14.6 3.5 8.3c-.1-2 1-3.7 2.8-4.5.4-.2.9-.1 1.2.3Z"></path></svg></span><span><small>رقم التواصل</small><strong dir="ltr">${escapeHTML(item.phone)}</strong></span></a>` : '';
+      return `<article class="executive-showcase" data-reveal>
+        <div class="executive-side-panel"><div class="profile-icon-wrap profile-icon-wrap--gold">${personIcon}</div><span>${escapeHTML(item.position || 'المدير التنفيذي')}</span></div>
+        <div class="executive-main-panel"><div class="executive-name-block"><h3>${escapeHTML(item.name)}</h3><span aria-hidden="true"></span></div><div class="executive-contact-card">${phone}${email}</div></div>
+      </article>`;
     }).join('');
   }
 
@@ -118,11 +154,11 @@
 
     const assembly = $('#cms-assembly-members');
     if (assembly && Array.isArray(data.assembly_members) && data.assembly_members.length) {
-      assembly.innerHTML = `<div class="member-rows">${memberRows(data.assembly_members, 'assembly')}</div>`;
+      assembly.innerHTML = `<div class="assembly-members-grid">${assemblyCards(data.assembly_members)}</div>`;
     }
     const board = $('#cms-board-members');
     if (board && Array.isArray(data.board_members) && data.board_members.length) {
-      board.innerHTML = `<div class="member-rows">${memberRows(data.board_members, 'board')}</div>${(data.board_term_start || data.board_term_duration) ? `<div class="board-term">${data.board_term_start ? `<div><small>تاريخ بداية الدورة</small><strong>${escapeHTML(data.board_term_start)}</strong></div>` : ''}${data.board_term_duration ? `<div><small>مدة الدورة</small><strong>${escapeHTML(data.board_term_duration)}</strong></div>` : ''}</div>` : ''}`;
+      board.innerHTML = boardShowcase(data.board_members, data.board_term_start, data.board_term_duration);
     }
     const executive = $('#cms-executive-members');
     if (executive && Array.isArray(data.executive_members) && data.executive_members.length) {
