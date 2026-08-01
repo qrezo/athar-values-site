@@ -1,43 +1,249 @@
 {
   "documents": [
     {
+      "title": "اللائحة الأساسية",
+      "category": "اللوائح والأنظمة",
+      "summary": "النسخة الرسمية المعتمدة",
+      "year": "2026",
+      "file": "assets/uploads/governance/basic-bylaws.pdf"
+    },
+    {
       "title": "شهادة ترخيص جمعية أثر القيم",
       "category": "شهادة الترخيص",
-      "summary": "الشهادة الرسمية المعتمدة",
+      "summary": "الشهادة الرسمية",
       "year": "2026",
       "file": "assets/uploads/license-certificate.pdf"
     },
     {
-      "title": "سياسة تجريبية للمعاينة",
-      "category": "السياسات واللوائح",
-      "summary": "ملف تجريبي يوضح طريقة عرض السياسات - يُستبدل بالنسخة المعتمدة",
+      "title": "اللائحة المالية",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
       "year": "2026",
-      "file": "assets/uploads/demo/demo-policy.pdf",
-      "demo": true
+      "file": "assets/uploads/governance/financial-regulation.pdf"
     },
     {
-      "title": "دليل حوكمة تجريبي",
-      "category": "أدلة ونماذج الحوكمة",
-      "summary": "ملف تجريبي يوضح طريقة عرض الأدلة والنماذج",
+      "title": "دليل الإجراءات المالية",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
       "year": "2026",
-      "file": "assets/uploads/demo/demo-governance-guide.pdf",
-      "demo": true
+      "file": "assets/uploads/governance/financial-procedures-guide.pdf"
     },
     {
-      "title": "قائمة مالية تجريبية",
-      "category": "القوائم المالية",
-      "summary": "ملف تجريبي للمعاينة - ليس قائمة مالية معتمدة",
+      "title": "الدليل التعريفي لمجلس الإدارة",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
       "year": "2026",
-      "file": "assets/uploads/demo/demo-financial-statements.pdf",
-      "demo": true
+      "file": "assets/uploads/governance/board-orientation-guide.pdf"
     },
     {
-      "title": "تقرير مالي سنوي تجريبي",
-      "category": "التقارير المالية السنوية",
-      "summary": "ملف تجريبي للمعاينة - يُستبدل بالتقرير المعتمد",
+      "title": "إقرار إفصاح حول تعاقدات الجمعية مع أعضاء مجلس الإدارة وأصحاب المناصب القيادية",
+      "category": "الأدلة والآليات",
+      "summary": "إقرار إفصاح معتمد",
       "year": "2026",
-      "file": "assets/uploads/demo/demo-annual-financial-report.pdf",
-      "demo": true
+      "file": "assets/uploads/governance/board-leadership-contracts-disclosure.pdf"
+    },
+    {
+      "title": "الدليل الإجرائي لتجنب تنبيه المتبرع أو المستفيد محل الاشتباه",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/anti-tipping-off-guide.pdf"
+    },
+    {
+      "title": "آلية التأكد من استحقاق المستفيدين للخدمة",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/beneficiary-eligibility-mechanism.pdf"
+    },
+    {
+      "title": "سياسة حفظ الوثائق والسجلات وإتلافها",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-document-retention.pdf"
+    },
+    {
+      "title": "لائحة إجراءات الفحص المسبق للمرشحين",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/regulation-pre-employment-screening.pdf"
+    },
+    {
+      "title": "دليل إجراءات الإبلاغ عن الاشتباه في عمليات غسل الأموال وتمويل الإرهاب",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/guide-aml-suspicion-reporting.pdf"
+    },
+    {
+      "title": "مصفوفة الصلاحيات المالية",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/matrix-financial-authorities.pdf"
+    },
+    {
+      "title": "دليل الهيكل التنظيمي والوحدات التنظيمية",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/guide-organizational-structure.pdf"
+    },
+    {
+      "title": "سياسة تعارض المصالح",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-conflict-of-interest.pdf"
+    },
+    {
+      "title": "سياسة تنمية الموارد المالية",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-financial-resource-development.pdf"
+    },
+    {
+      "title": "سياسة الصرف للبرامج والأنشطة والمصروفات الإدارية والعمومية",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-program-administrative-spending.pdf"
+    },
+    {
+      "title": "سياسة إدارة المخاطر المؤسسية",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-enterprise-risk-management.pdf"
+    },
+    {
+      "title": "لائحة تقييم المخاطر المتأصلة والكامنة",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/regulation-inherent-residual-risk-assessment.pdf"
+    },
+    {
+      "title": "سياسة الوقاية من عمليات غسل الأموال وتمويل الإرهاب",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-aml-cft-prevention.pdf"
+    },
+    {
+      "title": "نظام الرقابة الداخلية والإشراف المؤسسي",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/system-internal-control-governance.pdf"
+    },
+    {
+      "title": "سياسة تنظيم العلاقة مع المستفيدين",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-beneficiary-relations.pdf"
+    },
+    {
+      "title": "مدونة قواعد السلوك المهني وأخلاقيات العمل",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/code-professional-conduct-ethics.pdf"
+    },
+    {
+      "title": "سياسة الإبلاغ عن المخالفات وحماية مقدمي البلاغات",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-whistleblowing-protection.pdf"
+    },
+    {
+      "title": "سياسة جمع التبرعات",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-fundraising.pdf"
+    },
+    {
+      "title": "لائحة الموارد البشرية",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/regulation-human-resources.pdf"
+    },
+    {
+      "title": "لائحة تنظيم عمل المدير التنفيذي",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/regulation-executive-director.pdf"
+    },
+    {
+      "title": "سياسة الاستثمار",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-investment.pdf"
+    },
+    {
+      "title": "سياسة تسليم واستلام أعمال مجلس الإدارة",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-board-handover.pdf"
+    },
+    {
+      "title": "آلية التحقق من وصول التبرع للمستفيد النهائي",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/mechanism-donation-final-beneficiary.pdf"
+    },
+    {
+      "title": "لائحة أدوار ومسؤوليات مجلس الإدارة تجاه الوقاية من عمليات غسل الأموال وتمويل الإرهاب",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/regulation-board-aml-responsibilities.pdf"
+    },
+    {
+      "title": "آلية قبول الأعضاء في الجمعية العمومية",
+      "category": "الأدلة والآليات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/mechanism-general-assembly-membership.pdf"
+    },
+    {
+      "title": "لائحة المشتريات والأصول",
+      "category": "اللوائح والأنظمة",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/regulation-procurement-assets.pdf"
+    },
+    {
+      "title": "سياسة إدارة المتطوعين",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-volunteer-management.pdf"
+    },
+    {
+      "title": "سياسة خصوصية البيانات",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-data-privacy.pdf"
+    },
+    {
+      "title": "سياسة التعامل مع الشركاء",
+      "category": "السياسات",
+      "summary": "الإصدار الأول",
+      "year": "2026",
+      "file": "assets/uploads/governance/policy-partner-relations.pdf"
     }
   ]
 }

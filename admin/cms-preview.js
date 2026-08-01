@@ -34,7 +34,7 @@
   const DocumentsPreview = make(function () {
     const d = getData(this.props.entry);
     const docs = d.documents || [];
-    const groups = ["شهادة الترخيص", "السياسات واللوائح", "أدلة ونماذج الحوكمة", "التقارير المالية السنوية", "القوائم المالية"];
+    const groups = ["شهادة الترخيص", "السياسات", "اللوائح والأنظمة", "الأدلة والآليات", "التقارير المالية السنوية", "القوائم المالية"];
     return h("div", { className: "athar-preview" },
       h("section", { className: "preview-cover" },
         h("small", null, "معاينة الوثائق والتقارير"),

@@ -44,8 +44,9 @@ collections:
                 widget: "select"
                 options:
                   - { label: "شهادة الترخيص", value: "شهادة الترخيص" }
-                  - { label: "السياسات واللوائح", value: "السياسات واللوائح" }
-                  - { label: "أدلة ونماذج الحوكمة", value: "أدلة ونماذج الحوكمة" }
+                  - { label: "السياسات", value: "السياسات" }
+                  - { label: "اللوائح والأنظمة", value: "اللوائح والأنظمة" }
+                  - { label: "الأدلة والآليات", value: "الأدلة والآليات" }
                   - { label: "التقارير المالية السنوية", value: "التقارير المالية السنوية" }
                   - { label: "القوائم المالية", value: "القوائم المالية" }
               - { label: "الوصف", name: "summary", widget: "text", required: false }
@@ -69,6 +70,21 @@ collections:
             widget: "list"
             required: false
             field: { label: "الهدف", name: "goal", widget: "string" }
+          - label: "الأهداف الاستراتيجية التفصيلية"
+            name: "strategic_objectives"
+            widget: "list"
+            required: false
+            summary: "{{fields.pillar}}"
+            fields:
+              - { label: "المحور", name: "pillar", widget: "string" }
+              - { label: "الوصف المختصر", name: "subtitle", widget: "string", required: false }
+              - label: "الأهداف"
+                name: "items"
+                widget: "list"
+                required: false
+                field: { label: "الهدف", name: "item", widget: "string" }
+          - { label: "تاريخ بداية دورة مجلس الإدارة", name: "board_term_start", widget: "string", required: false }
+          - { label: "مدة دورة مجلس الإدارة", name: "board_term_duration", widget: "string", required: false }
           - { label: "النطاق الجغرافي", name: "geographic_scope", widget: "string" }
           - { label: "صورة الهيكل التنظيمي", name: "organization_chart", widget: "image", required: false }
           - label: "أعضاء الجمعية العمومية"

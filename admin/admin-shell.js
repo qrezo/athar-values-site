@@ -537,7 +537,7 @@
     if (type === 'document') {
       const item = index === null ? {} : state.data.governance.documents[index] || {};
       const financial = extra.financial || isFinancial(item.category);
-      const values = financial ? ['التقارير المالية السنوية', 'القوائم المالية'] : ['شهادة الترخيص', 'السياسات واللوائح', 'أدلة ونماذج الحوكمة'];
+      const values = financial ? ['التقارير المالية السنوية', 'القوائم المالية'] : ['شهادة الترخيص', 'السياسات', 'اللوائح والأنظمة', 'الأدلة والآليات'];
       return { eyebrow: financial ? 'التقارير المالية' : 'ملفات الحوكمة', title: index === null ? 'رفع ملف جديد' : item.title, html:
         field('عنوان الملف', 'title', item.title, { required: true, full: true }) + field('التصنيف', 'category', item.category || values[0], { type: 'select', values }) + field('السنة', 'year', item.year) + field('وصف مختصر', 'summary', item.summary, { type: 'textarea', full: true }) + uploadControl('file', item.file, 'الملف PDF', '.pdf,application/pdf') };
     }
