@@ -1,8 +1,14 @@
-#!/usr/bin/env sh
-set -eu
-if find . -path './.git' -prune -o -print | LC_ALL=C grep -n '[^A-Za-z0-9._/-]' >/dev/null 2>&1; then
-  echo 'Filename validation failed: a deploy path contains unsafe characters.' >&2
-  find . -path './.git' -prune -o -print | LC_ALL=C grep -n '[^A-Za-z0-9._/-]' >&2 || true
-  exit 1
-fi
-echo 'All deploy filenames are ASCII-safe.'
+[build]
+  publish = "."
+  command = "bash validate-filenames.sh"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/uploads/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"

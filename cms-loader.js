@@ -1,131 +1,313 @@
-<!doctype html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#10213d">
-  <title>إدارة موقع جمعية أثر القيم</title>
-  <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@500;600;700;800;900&family=Noto+Sans+Arabic:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin-style.css">
-</head>
-<body>
-  <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+(function () {
+  'use strict';
 
-  <section id="loginScreen" class="login-screen">
-    <div class="login-panel">
-      <div class="login-brand">
-        <img src="../assets/images/athar-logo.png" alt="شعار جمعية أثر القيم">
-        <div><strong>جمعية أثر القيم</strong><span>مركز إدارة الموقع</span></div>
-      </div>
-      <div class="login-copy">
-        <span class="eyebrow">لوحة سهلة لفريق الجمعية</span>
-        <h1>أضف نشاطًا أو عدّل بيانات الموقع خلال دقائق.</h1>
-        <p>لا تحتاج إلى فتح GitHub أو تعديل الأكواد. سجّل الدخول، اختر القسم، ثم احفظ التحديث.</p>
-      </div>
-      <div class="login-actions">
-        <button id="loginButton" class="button button-primary" type="button">تسجيل الدخول</button>
-        <a class="button button-soft" href="../index.html" target="_blank" rel="noopener">فتح الموقع</a>
-      </div>
-      <p class="login-help">الدخول متاح للحسابات التي تمت دعوتها من Netlify Identity فقط.</p>
-    </div>
-    <aside class="login-aside">
-      <div class="aside-badge">مهيأة للاستخدام اليومي</div>
-      <div class="login-feature"><b>01</b><div><strong>إضافة سريعة</strong><span>نشاط، عضو، إحصائية أو ملف.</span></div></div>
-      <div class="login-feature"><b>02</b><div><strong>نماذج واضحة</strong><span>حقول عربية مختصرة مع شرح لكل خطوة.</span></div></div>
-      <div class="login-feature"><b>03</b><div><strong>نشر مباشر</strong><span>الحفظ يحدّث ملفات الموقع في GitHub.</span></div></div>
-    </aside>
-  </section>
+  const $ = (selector, scope = document) => scope.querySelector(selector);
+  const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
 
-  <div id="adminApp" class="admin-app is-hidden">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-head">
-        <img src="../assets/images/athar-logo-reverse.png" alt="شعار جمعية أثر القيم">
-        <div><strong>أثر القيم</strong><span>لوحة الإدارة</span></div>
-        <button id="closeSidebar" class="icon-button sidebar-close" type="button" aria-label="إغلاق القائمة">×</button>
-      </div>
+  function localData(path) {
+    const value = window.ATHAR_LOCAL_DATA && window.ATHAR_LOCAL_DATA[path];
+    return value ? JSON.parse(JSON.stringify(value)) : null;
+  }
 
-      <button class="primary-create" data-action="new-program" type="button"><span>＋</span> إضافة نشاط جديد</button>
+  async function getJSON(path) {
+    try {
+      const response = await fetch(path, { cache: 'no-store' });
+      if (!response.ok) return localData(path);
+      return response.json();
+    } catch (_) {
+      return localData(path);
+    }
+  }
 
-      <nav class="sidebar-nav" aria-label="أقسام لوحة الإدارة">
-        <button class="nav-button is-active" data-page="dashboard" type="button"><span class="nav-symbol">⌂</span><span>الرئيسية</span></button>
-        <div class="nav-label">محتوى الجمعية</div>
-        <button class="nav-button" data-page="site" type="button"><span class="nav-symbol">✎</span><span>بيانات الجمعية</span></button>
-        <button class="nav-button" data-page="programs" type="button"><span class="nav-symbol">✦</span><span>البرامج والمبادرات</span><em id="programNavCount">0</em></button>
-        <button class="nav-button" data-page="organization" type="button"><span class="nav-symbol">◎</span><span>الأعضاء والقيادات</span></button>
-        <button class="nav-button" data-page="impact" type="button"><span class="nav-symbol">↗</span><span>الإحصاءات والأثر</span></button>
-        <div class="nav-label">الوثائق والنشر</div>
-        <button class="nav-button" data-page="governance" type="button"><span class="nav-symbol">▤</span><span>الحوكمة واللوائح</span></button>
-        <button class="nav-button" data-page="financial" type="button"><span class="nav-symbol">◫</span><span>التقارير المالية</span></button>
-        <button class="nav-button" data-page="media" type="button"><span class="nav-symbol">◉</span><span>المركز الإعلامي</span></button>
-        <button class="nav-button" data-page="partners" type="button"><span class="nav-symbol">◇</span><span>الشركاء</span></button>
-        <button class="nav-button" data-page="contact" type="button"><span class="nav-symbol">☎</span><span>بيانات التواصل</span></button>
-      </nav>
+  function escapeHTML(value) {
+    return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[char]));
+  }
 
-      <div class="sidebar-bottom">
-        <a href="../index.html" target="_blank" rel="noopener">معاينة الموقع ↗</a>
-        <button id="logoutButton" type="button">تسجيل الخروج</button>
-      </div>
-    </aside>
+  function phoneDigits(value) { return String(value || '').replace(/\D/g, ''); }
+  function phoneHref(value) {
+    const digits = phoneDigits(value).replace(/^00/, '');
+    return digits ? `tel:+${digits}` : '#';
+  }
+  function whatsappHref(value) {
+    const digits = phoneDigits(value).replace(/^00/, '');
+    return digits ? `https://wa.me/${digits}` : '#';
+  }
+  function setText(selector, value) {
+    if (!value) return;
+    $$(selector).forEach((el) => { el.textContent = value; });
+  }
 
-    <div class="app-main">
-      <header class="topbar">
-        <div class="topbar-title-wrap">
-          <button id="openSidebar" class="icon-button menu-button" type="button" aria-label="فتح القائمة">☰</button>
-          <div>
-            <span id="pageEyebrow">مركز إدارة موقع الجمعية</span>
-            <h1 id="pageTitle">الرئيسية</h1>
-          </div>
-        </div>
-        <div class="topbar-actions">
-          <div id="connectionState" class="connection-state"><i></i><span>جاري الاتصال…</span></div>
-          <button id="refreshButton" class="button button-plain" type="button">تحديث البيانات</button>
-          <a class="button button-soft compact" href="../index.html" target="_blank" rel="noopener">معاينة الموقع</a>
-          <div class="user-menu">
-            <span id="userInitial">أ</span>
-            <div><strong id="userName">مسؤول الموقع</strong><small id="userEmail">—</small></div>
-          </div>
-        </div>
-      </header>
+  function renderSite(site) {
+    if (!site) return;
+    setText('[data-cms-site-name]', site.name);
+    setText('[data-cms-site-description]', site.description);
+    setText('[data-cms-city]', site.city);
+    $$('[data-cms-phone]').forEach((el) => {
+      if (!site.phone) return;
+      el.textContent = site.phone;
+      el.setAttribute('dir', 'ltr');
+      if (el.tagName === 'A') el.href = phoneHref(site.phone);
+    });
+    $$('[data-cms-whatsapp]').forEach((el) => {
+      const value = site.whatsapp || site.phone;
+      if (!value) return;
+      const strong = $('strong', el);
+      if (strong) {
+        strong.innerHTML = `<bdi>${escapeHTML(value)}</bdi>`;
+        strong.setAttribute('dir', 'ltr');
+      }
+      el.href = whatsappHref(value);
+      el.target = '_blank';
+      el.rel = 'noopener';
+    });
+    $$('[data-cms-complaints-whatsapp]').forEach((el) => {
+      const value = site.whatsapp || site.phone;
+      if (!value || el.tagName !== 'A') return;
+      const message = 'السلام عليكم، لدي شكوى أو مقترح وأرغب في مشاركته مع الجمعية.';
+      el.href = `${whatsappHref(value)}?text=${encodeURIComponent(message)}`;
+      el.target = '_blank';
+      el.rel = 'noopener';
+    });
+    $$('[data-cms-email]').forEach((el) => {
+      if (!site.email) return;
+      el.textContent = site.email;
+      if (el.tagName === 'A') el.href = `mailto:${site.email}`;
+    });
+    $$('[data-cms-email-action]').forEach((el) => {
+      if (!site.email || el.tagName !== 'A') return;
+      el.href = `mailto:${site.email}`;
+    });
+  }
 
-      <main id="workspace" class="workspace" tabindex="-1">
-        <section id="loadingView" class="loading-view">
-          <div class="loader"></div>
-          <strong>جاري تحميل بيانات الموقع</strong>
-          <span>لحظات ونجهز لوحة الإدارة…</span>
-        </section>
-        <section id="pageContent" class="page-content is-hidden"></section>
-      </main>
-    </div>
-  </div>
+  function memberRows(items, type) {
+    return items.map((item, index) => {
+      const secondary = type === 'assembly' ? item.membership_type : item.position;
+      return `<article class="member-row" data-reveal><span>${String(index + 1).padStart(2, '0')}</span><div><strong>${escapeHTML(item.name)}</strong>${secondary ? `<small>${escapeHTML(secondary)}</small>` : ''}</div></article>`;
+    }).join('');
+  }
 
-  <div id="drawerBackdrop" class="drawer-backdrop is-hidden"></div>
-  <aside id="editorDrawer" class="editor-drawer" aria-hidden="true">
-    <header class="drawer-header">
-      <div><span id="drawerEyebrow">إضافة جديدة</span><h2 id="drawerTitle">إضافة نشاط</h2></div>
-      <button id="closeDrawer" class="icon-button" type="button" aria-label="إغلاق">×</button>
-    </header>
-    <div id="drawerBody" class="drawer-body"></div>
-    <footer class="drawer-footer">
-      <button id="cancelDrawer" class="button button-plain" type="button">إلغاء</button>
-      <button id="saveDrawer" class="button button-primary" type="button">حفظ ونشر</button>
-    </footer>
-  </aside>
+  function executiveCards(items) {
+    return items.map((item, index) => {
+      const email = item.email ? `<a href="mailto:${escapeHTML(item.email)}">${escapeHTML(item.email)}</a>` : '';
+      const phone = item.phone ? `<a href="${phoneHref(item.phone)}" dir="ltr">${escapeHTML(item.phone)}</a>` : '';
+      return `<article class="people-contact" data-reveal><div class="avatar-placeholder">${String(index + 1).padStart(2, '0')}</div><h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.position || '')}</p>${email}${phone}</article>`;
+    }).join('');
+  }
 
-  <div id="confirmDialog" class="confirm-dialog is-hidden" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
-    <div class="confirm-card">
-      <div class="confirm-icon">!</div>
-      <h2 id="confirmTitle">تأكيد الحذف</h2>
-      <p id="confirmMessage">هل أنت متأكد؟</p>
-      <div><button id="cancelConfirm" class="button button-plain" type="button">إلغاء</button><button id="approveConfirm" class="button button-danger" type="button">حذف</button></div>
-    </div>
-  </div>
+  function renderAbout(data) {
+    if (!data) return;
+    setText('[data-cms-about-summary]', data.summary);
+    setText('[data-cms-vision]', data.vision);
+    setText('[data-cms-mission]', data.mission);
+    setText('[data-cms-scope]', data.geographic_scope);
+    if (data.organization_chart) {
+      $$('[data-cms-organization-chart]').forEach((image) => { image.src = data.organization_chart; });
+    }
 
-  <div id="toastRegion" class="toast-region" aria-live="polite"></div>
-  <input id="globalFileInput" class="visually-hidden" type="file">
+    const goals = $('#cms-strategic-goals');
+    if (goals && Array.isArray(data.goals) && data.goals.length) {
+      goals.innerHTML = `<ul class="strategy-goals">${data.goals.map((goal) => `<li>${escapeHTML(typeof goal === 'string' ? goal : goal.goal)}</li>`).join('')}</ul>`;
+    }
 
-  <script src="admin-shell.js"></script>
-</body>
-</html>
+    const objectives = $('#cms-strategic-objectives');
+    if (objectives && Array.isArray(data.strategic_objectives) && data.strategic_objectives.length) {
+      objectives.innerHTML = data.strategic_objectives.map((group, index) => `<article class="objective-pillar" data-reveal><div class="objective-pillar-head"><span>${String(index + 1).padStart(2, '0')}</span><div><h3>${escapeHTML(group.pillar || '')}</h3>${group.subtitle ? `<p>${escapeHTML(group.subtitle)}</p>` : ''}</div></div><div class="objective-items">${(group.items || []).map((item) => `<div>${escapeHTML(typeof item === 'string' ? item : (item.item || item.title || ''))}</div>`).join('')}</div></article>`).join('');
+    }
+
+    const assembly = $('#cms-assembly-members');
+    if (assembly && Array.isArray(data.assembly_members) && data.assembly_members.length) {
+      assembly.innerHTML = `<div class="member-rows">${memberRows(data.assembly_members, 'assembly')}</div>`;
+    }
+    const board = $('#cms-board-members');
+    if (board && Array.isArray(data.board_members) && data.board_members.length) {
+      board.innerHTML = `<div class="member-rows">${memberRows(data.board_members, 'board')}</div>${(data.board_term_start || data.board_term_duration) ? `<div class="board-term">${data.board_term_start ? `<div><small>تاريخ بداية الدورة</small><strong>${escapeHTML(data.board_term_start)}</strong></div>` : ''}${data.board_term_duration ? `<div><small>مدة الدورة</small><strong>${escapeHTML(data.board_term_duration)}</strong></div>` : ''}</div>` : ''}`;
+    }
+    const executive = $('#cms-executive-members');
+    if (executive && Array.isArray(data.executive_members) && data.executive_members.length) {
+      executive.innerHTML = executiveCards(data.executive_members);
+    }
+  }
+
+  function resourceItem(item) {
+    const hasFile = Boolean(item.file);
+    const tag = hasFile ? 'a' : 'div';
+    const href = hasFile ? ` href="${escapeHTML(item.file)}" target="_blank" rel="noopener"` : '';
+    const meta = [item.year, item.summary].filter(Boolean).join(' - ') || item.category || 'وثيقة';
+    return `<${tag} class="resource-card"${href} data-reveal>
+      <span class="resource-icon" aria-hidden="true"><b>PDF</b></span>
+      <span class="resource-copy"><strong>${escapeHTML(item.title)}</strong><span>${escapeHTML(meta)}</span></span>
+      <span class="badge">${hasFile ? 'فتح الملف' : 'معلومات'} <i aria-hidden="true">←</i></span>
+    </${tag}>`;
+  }
+
+  function renderCategory(data, selector, categories, emptyText) {
+    const container = $(selector);
+    if (!container || !data || !Array.isArray(data.documents)) return;
+    const names = Array.isArray(categories) ? categories : [categories];
+    const items = data.documents.filter((item) => names.includes((item.category || '').trim()));
+    container.innerHTML = items.length ? items.map(resourceItem).join('') : `<div class="empty-state"><strong>${escapeHTML(emptyText)}</strong></div>`;
+  }
+
+  function renderDocuments(data) {
+    renderCategory(data, '#cms-policies-documents', 'السياسات', 'قريبًا');
+    renderCategory(data, '#cms-regulations-documents', 'اللوائح والأنظمة', 'قريبًا');
+    renderCategory(data, '#cms-guides-documents', 'الأدلة والآليات', 'قريبًا');
+    renderCategory(data, '#cms-financial-documents', 'القوائم المالية', 'قريبًا');
+    renderCategory(data, '#cms-annual-documents', ['التقارير المالية السنوية', 'التقارير السنوية'], 'قريبًا');
+  }
+
+  function programCards(items) {
+    return items.map((item, index) => {
+      const image = item.image ? `<span class="program-card-media"><img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title || 'صورة البرنامج')}" loading="lazy"><i>عرض التفاصيل</i></span>` : `<span class="program-no-image">${String(index + 1).padStart(2, '0')}</span>`;
+      const id = item.id || `program-${index + 1}`;
+      const body = `<div class="program-card-body">${item.category ? `<span>${escapeHTML(item.category)}</span>` : ''}<h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary)}</p><div class="program-card-foot">${item.meta ? `<small>${escapeHTML(item.meta)}</small>` : '<small>برنامج الجمعية</small>'}</div><b class="card-detail-link">اقرأ تفاصيل البرنامج <span>←</span></b></div>`;
+      return `<a class="program-card" href="program-detail.html?id=${encodeURIComponent(id)}" data-reveal>${image}${body}</a>`;
+    }).join('');
+  }
+
+  function renderPrograms(data) {
+    if (!data || !Array.isArray(data.programs) || !data.programs.length) return;
+    const section = $('#cms-programs-content');
+    if (section) {
+      section.className = 'content-section programs-live-section';
+      section.innerHTML = `<div class="container"><div class="section-heading"><span class="eyebrow">البرامج والمبادرات</span><h2>ما تصنعه الجمعية على أرض الواقع.</h2><p>نماذج من البرامج والمبادرات المضافة من لوحة الإدارة.</p></div><div class="program-grid">${programCards(data.programs)}</div></div>`;
+    }
+    const home = $('#cms-home-programs');
+    if (home) {
+      home.hidden = false;
+      home.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">آخر البرامج والمبادرات</span><h2>من الفكرة إلى أثر ملموس.</h2></div><p>تظهر هنا أحدث البرامج المضافة من لوحة الإدارة، مع الصورة والوصف والحالة.</p></div><div class="program-grid">${programCards(data.programs.slice().reverse().slice(0, 3))}</div><div class="section-action"><a class="button button--navy" href="programs.html">عرض جميع البرامج</a></div></div>`;
+    }
+  }
+
+  function renderImpact(data) {
+    const section = $('#cms-impact-content');
+    if (!section || !data) return;
+    const stats = Array.isArray(data.statistics) ? data.statistics : [];
+    const reports = Array.isArray(data.reports) ? data.reports : [];
+    if (!stats.length && !reports.length) return;
+    section.className = 'content-section impact-live-section';
+    const statsHTML = stats.length ? `<div class="impact-stat-grid">${stats.map((item) => `<article data-reveal><strong>${escapeHTML(item.value)}</strong><h3>${escapeHTML(item.label)}</h3>${item.summary ? `<p>${escapeHTML(item.summary)}</p>` : ''}</article>`).join('')}</div>` : '';
+    const reportsHTML = reports.length ? `<div class="impact-report-list"><div class="section-heading"><span class="eyebrow">تقارير الأثر</span><h2>وثائق القياس والنتائج</h2></div>${reports.map(resourceItem).join('')}</div>` : '';
+    section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">بيانات الأثر</span><h2>أرقام توضّح ما تحقق.</h2></div><p>قريبًا.</p></div>${statsHTML}${reportsHTML}</div>`;
+  }
+
+  function newsCards(items) {
+    return items.map((item, index) => {
+      const id = item.id || `news-${index + 1}`;
+      const content = `<span class="media-news-image"><img src="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" alt="${escapeHTML(item.title)}" loading="lazy"><i>قراءة الخبر</i></span><div><span>${escapeHTML(item.date || 'خبر الجمعية')}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || '')}</p><b class="card-detail-link">عرض التفاصيل <span>←</span></b></div>`;
+      return `<a class="media-news-card" href="news-detail.html?id=${encodeURIComponent(id)}" data-reveal>${content}</a>`;
+    }).join('');
+  }
+
+  function renderMedia(data) {
+    if (!data) return;
+    const news = Array.isArray(data.news) ? data.news : [];
+    const gallery = Array.isArray(data.gallery) ? data.gallery : [];
+    const documents = Array.isArray(data.documents) ? data.documents : [];
+    if (!news.length && !gallery.length && !documents.length) return;
+    const section = $('#cms-media-content');
+    if (section) {
+      const newsHTML = news.length ? `<div class="media-news-grid">${newsCards(news)}</div>` : '';
+      const galleryHTML = gallery.length ? `<div class="media-subsection"><div class="section-heading"><span class="eyebrow">ألبوم الصور</span><h2>لقطات من مسيرة الجمعية</h2></div><div class="gallery-grid">${gallery.map((item) => `<button class="gallery-item" type="button" data-lightbox-image="${escapeHTML(item.image)}" data-lightbox-title="${escapeHTML(item.title || 'صورة')}" data-lightbox-caption="${escapeHTML(item.caption || '')}" data-reveal><img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title || item.caption || 'صورة من الجمعية')}" loading="lazy"><span><strong>${escapeHTML(item.title || 'صورة')}</strong><small>${escapeHTML(item.caption || '')}</small></span></button>`).join('')}</div></div>` : '';
+      const docsHTML = documents.length ? `<div class="media-subsection"><div class="section-heading"><span class="eyebrow">ملفات إعلامية</span><h2>مواد للتحميل والاطلاع</h2></div><div class="resource-list">${documents.map(resourceItem).join('')}</div></div>` : '';
+      section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">آخر الأخبار</span><h2>أخبار الجمعية وموادها الإعلامية.</h2></div><p>اضغط على الخبر أو الصورة لفتحها وعرض محتواها كاملًا.</p></div>${newsHTML}${galleryHTML}${docsHTML}</div>`;
+    }
+    const home = $('#cms-home-media');
+    if (home && news.length) {
+      home.hidden = false;
+      home.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">المركز الإعلامي</span><h2>أحدث أخبار الجمعية.</h2></div><p>نافذة مختصرة على الأنشطة والمستجدات، مع صفحة مستقلة لكل خبر.</p></div><div class="media-news-grid">${newsCards(news.slice().reverse().slice(0, 3))}</div><div class="section-action"><a class="button button--navy" href="media.html">عرض المركز الإعلامي</a></div></div>`;
+    }
+  }
+
+  function normalizeList(value) {
+    if (Array.isArray(value)) return value.map((item) => typeof item === 'string' ? item : (item && (item.objective || item.goal || item.title))).filter(Boolean);
+    return String(value || '').split(/\n|،/).map((item) => item.trim()).filter(Boolean);
+  }
+
+  function renderProgramDetail(data) {
+    const container = $('#cms-program-detail');
+    if (!container || !data || !Array.isArray(data.programs)) return;
+    const id = new URLSearchParams(window.location.search).get('id');
+    const item = data.programs.find((program, index) => String(program.id || `program-${index + 1}`) === id) || data.programs[0];
+    if (!item) {
+      container.innerHTML = `<div class="detail-empty"><h1>البرنامج غير موجود</h1><a class="button button--navy" href="programs.html">العودة إلى البرامج</a></div>`;
+      return;
+    }
+    document.title = `${item.title} | جمعية أثر القيم`;
+    const objectives = normalizeList(item.objectives);
+    const facts = [
+      ['الفئة المستهدفة', item.audience || item.target_audience],
+      ['المدة', item.duration],
+      ['الموقع', item.location],
+      ['الحالة', item.status || item.meta]
+    ].filter((pair) => pair[1]);
+    container.innerHTML = `<article class="program-detail">
+      <div class="detail-cover" data-reveal><img src="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" alt="${escapeHTML(item.title)}"><span>${escapeHTML(item.category || 'برامج الجمعية')}</span></div>
+      <div class="detail-content" data-reveal><span class="eyebrow">البرنامج والمبادرة</span><h1>${escapeHTML(item.title)}</h1><p class="detail-lead">${escapeHTML(item.summary || '')}</p>
+      ${facts.length ? `<dl class="detail-facts">${facts.map(([label, value]) => `<div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(value)}</dd></div>`).join('')}</dl>` : ''}
+      <section class="detail-copy"><h2>عن البرنامج</h2><p>${escapeHTML(item.details || item.description || item.summary || '')}</p></section>
+      ${objectives.length ? `<section class="detail-copy"><h2>أهداف البرنامج</h2><ul>${objectives.map((value) => `<li>${escapeHTML(value)}</li>`).join('')}</ul></section>` : ''}
+      <div class="detail-actions">${item.url ? `<a class="button button--gold" href="${escapeHTML(item.url)}" target="_blank" rel="noopener">التسجيل أو معرفة المزيد</a>` : ''}<a class="button button--outline" data-cms-whatsapp href="https://wa.me/966557195594" target="_blank" rel="noopener">استفسر عبر واتساب</a></div>
+      </div></article>`;
+  }
+
+  function renderNewsDetail(data) {
+    const container = $('#cms-news-detail');
+    if (!container || !data || !Array.isArray(data.news)) return;
+    const id = new URLSearchParams(window.location.search).get('id');
+    const item = data.news.find((news, index) => String(news.id || `news-${index + 1}`) === id) || data.news[0];
+    if (!item) {
+      container.innerHTML = `<div class="detail-empty"><h1>الخبر غير موجود</h1><a class="button button--navy" href="media.html">العودة إلى المركز الإعلامي</a></div>`;
+      return;
+    }
+    document.title = `${item.title} | جمعية أثر القيم`;
+    container.innerHTML = `<article class="news-detail">
+      <div class="news-detail-heading" data-reveal><span class="eyebrow">المركز الإعلامي</span><time>${escapeHTML(item.date || 'خبر الجمعية')}</time><h1>${escapeHTML(item.title)}</h1><p class="detail-lead">${escapeHTML(item.summary || '')}</p></div>
+      <button class="news-detail-image" type="button" data-lightbox-image="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" data-lightbox-title="${escapeHTML(item.title)}" data-lightbox-caption="${escapeHTML(item.summary || '')}" data-reveal><img src="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" alt="${escapeHTML(item.title)}"><span>تكبير الصورة</span></button>
+      <div class="detail-copy news-detail-copy" data-reveal><p>${escapeHTML(item.content || item.details || item.summary || '')}</p>${item.link ? `<a class="button button--navy" href="${escapeHTML(item.link)}" target="_blank" rel="noopener">فتح المصدر الخارجي</a>` : ''}</div>
+    </article>`;
+  }
+
+  function renderPartners(data) {
+    const section = $('#cms-partners-content');
+    if (!section || !data || !Array.isArray(data.partners)) return;
+    const items = data.partners;
+    if (!items.length) return;
+    section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">شركاء الأثر</span><h2>شراكات تعزّز الوصول والأثر.</h2></div><p>تظهر الجهات الشريكة والداعمة بعد إضافتها من لوحة الإدارة.</p></div><div class="partner-grid">${items.map((item) => {
+      const content = `<span class="partner-logo"><img src="${escapeHTML(item.logo || 'assets/images/athar-logo-secondary-v2.png')}" alt="شعار ${escapeHTML(item.name)}" loading="lazy"></span><strong>${escapeHTML(item.name)}</strong><p>${escapeHTML(item.summary || '')}</p>`;
+      return item.url ? `<a class="partner-card" href="${escapeHTML(item.url)}" target="_blank" rel="noopener" data-reveal>${content}</a>` : `<article class="partner-card" data-reveal>${content}</article>`;
+    }).join('')}</div></div>`;
+  }
+
+  function activateReveals() {
+    if (typeof window.atharRefreshReveal === 'function') window.atharRefreshReveal();
+  }
+
+  async function initCMSContent() {
+    const [site, documents, about, programs, impact, media, partners] = await Promise.all([
+      getJSON('data/site.json'),
+      getJSON('data/governance.json'),
+      getJSON('data/about.json'),
+      getJSON('data/programs.json'),
+      getJSON('data/impact.json'),
+      getJSON('data/media.json'),
+      getJSON('data/partners.json')
+    ]);
+    renderSite(site);
+    renderDocuments(documents);
+    renderAbout(about);
+    renderPrograms(programs);
+    renderProgramDetail(programs);
+    renderImpact(impact);
+    renderMedia(media);
+    renderNewsDetail(media);
+    renderPartners(partners);
+    renderSite(site);
+    activateReveals();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initCMSContent);
+  else initCMSContent();
+})();
