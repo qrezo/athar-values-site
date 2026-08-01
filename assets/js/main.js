@@ -70,6 +70,12 @@
     if (event.key === 'Escape') closeMobileMenu();
   });
 
+  document.addEventListener('click', (event) => {
+    if (body.classList.contains('menu-open') && !event.target.closest('.site-header')) {
+      closeMobileMenu();
+    }
+  });
+
   window.addEventListener('resize', () => {
     if (window.innerWidth > 1180 && body.classList.contains('menu-open')) closeMobileMenu();
   });

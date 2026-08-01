@@ -110,13 +110,19 @@
     if (goals && Array.isArray(data.goals) && data.goals.length) {
       goals.innerHTML = `<ul class="strategy-goals">${data.goals.map((goal) => `<li>${escapeHTML(typeof goal === 'string' ? goal : goal.goal)}</li>`).join('')}</ul>`;
     }
+
+    const objectives = $('#cms-strategic-objectives');
+    if (objectives && Array.isArray(data.strategic_objectives) && data.strategic_objectives.length) {
+      objectives.innerHTML = data.strategic_objectives.map((group, index) => `<article class="objective-pillar" data-reveal><div class="objective-pillar-head"><span>${String(index + 1).padStart(2, '0')}</span><div><h3>${escapeHTML(group.pillar || '')}</h3>${group.subtitle ? `<p>${escapeHTML(group.subtitle)}</p>` : ''}</div></div><div class="objective-items">${(group.items || []).map((item) => `<div>${escapeHTML(typeof item === 'string' ? item : (item.item || item.title || ''))}</div>`).join('')}</div></article>`).join('');
+    }
+
     const assembly = $('#cms-assembly-members');
     if (assembly && Array.isArray(data.assembly_members) && data.assembly_members.length) {
       assembly.innerHTML = `<div class="member-rows">${memberRows(data.assembly_members, 'assembly')}</div>`;
     }
     const board = $('#cms-board-members');
     if (board && Array.isArray(data.board_members) && data.board_members.length) {
-      board.innerHTML = `<div class="member-rows">${memberRows(data.board_members, 'board')}</div>`;
+      board.innerHTML = `<div class="member-rows">${memberRows(data.board_members, 'board')}</div>${(data.board_term_start || data.board_term_duration) ? `<div class="board-term">${data.board_term_start ? `<div><small>تاريخ بداية الدورة</small><strong>${escapeHTML(data.board_term_start)}</strong></div>` : ''}${data.board_term_duration ? `<div><small>مدة الدورة</small><strong>${escapeHTML(data.board_term_duration)}</strong></div>` : ''}</div>` : ''}`;
     }
     const executive = $('#cms-executive-members');
     if (executive && Array.isArray(data.executive_members) && data.executive_members.length) {
@@ -129,10 +135,9 @@
     const tag = hasFile ? 'a' : 'div';
     const href = hasFile ? ` href="${escapeHTML(item.file)}" target="_blank" rel="noopener"` : '';
     const meta = [item.year, item.summary].filter(Boolean).join(' - ') || item.category || 'وثيقة';
-    const demo = item.demo || /تجريب/i.test(`${item.title || ''} ${item.summary || ''}`);
-    return `<${tag} class="resource-card${demo ? ' is-demo' : ''}"${href} data-reveal>
+    return `<${tag} class="resource-card"${href} data-reveal>
       <span class="resource-icon" aria-hidden="true"><b>PDF</b></span>
-      <span class="resource-copy"><strong>${escapeHTML(item.title)}</strong><span>${escapeHTML(meta)}</span>${demo ? '<em>ملف تجريبي</em>' : ''}</span>
+      <span class="resource-copy"><strong>${escapeHTML(item.title)}</strong><span>${escapeHTML(meta)}</span></span>
       <span class="badge">${hasFile ? 'فتح الملف' : 'معلومات'} <i aria-hidden="true">←</i></span>
     </${tag}>`;
   }
@@ -142,22 +147,22 @@
     if (!container || !data || !Array.isArray(data.documents)) return;
     const names = Array.isArray(categories) ? categories : [categories];
     const items = data.documents.filter((item) => names.includes((item.category || '').trim()));
-    container.innerHTML = items.length ? items.map(resourceItem).join('') : `<div class="empty-state"><strong>${escapeHTML(emptyText)}</strong><a class="text-link" data-cms-email-action href="mailto:info@atharq.org">اطلبها عبر البريد <span>←</span></a></div>`;
+    container.innerHTML = items.length ? items.map(resourceItem).join('') : `<div class="empty-state"><strong>${escapeHTML(emptyText)}</strong></div>`;
   }
 
   function renderDocuments(data) {
-    renderCategory(data, '#cms-policies-documents', 'السياسات واللوائح', 'لا توجد سياسات ولوائح منشورة حاليًا');
-    renderCategory(data, '#cms-general-governance-documents', ['أدلة ونماذج الحوكمة', 'نماذج عامة'], 'لا توجد أدلة ونماذج منشورة حاليًا');
-    renderCategory(data, '#cms-financial-documents', 'القوائم المالية', 'لا توجد قوائم مالية منشورة حاليًا');
-    renderCategory(data, '#cms-annual-documents', ['التقارير المالية السنوية', 'التقارير السنوية'], 'لا توجد تقارير مالية سنوية منشورة حاليًا');
+    renderCategory(data, '#cms-policies-documents', 'السياسات', 'قريبًا');
+    renderCategory(data, '#cms-regulations-documents', 'اللوائح والأنظمة', 'قريبًا');
+    renderCategory(data, '#cms-guides-documents', 'الأدلة والآليات', 'قريبًا');
+    renderCategory(data, '#cms-financial-documents', 'القوائم المالية', 'قريبًا');
+    renderCategory(data, '#cms-annual-documents', ['التقارير المالية السنوية', 'التقارير السنوية'], 'قريبًا');
   }
 
   function programCards(items) {
     return items.map((item, index) => {
       const image = item.image ? `<span class="program-card-media"><img src="${escapeHTML(item.image)}" alt="${escapeHTML(item.title || 'صورة البرنامج')}" loading="lazy"><i>عرض التفاصيل</i></span>` : `<span class="program-no-image">${String(index + 1).padStart(2, '0')}</span>`;
-      const demo = /تجريب/i.test(`${item.title || ''} ${item.summary || ''}`);
       const id = item.id || `program-${index + 1}`;
-      const body = `<div class="program-card-body">${item.category ? `<span>${escapeHTML(item.category)}</span>` : ''}<h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary)}</p><div class="program-card-foot">${item.meta ? `<small>${escapeHTML(item.meta)}</small>` : '<small>برنامج الجمعية</small>'}${demo ? '<em>نموذج تجريبي</em>' : ''}</div><b class="card-detail-link">اقرأ تفاصيل البرنامج <span>←</span></b></div>`;
+      const body = `<div class="program-card-body">${item.category ? `<span>${escapeHTML(item.category)}</span>` : ''}<h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary)}</p><div class="program-card-foot">${item.meta ? `<small>${escapeHTML(item.meta)}</small>` : '<small>برنامج الجمعية</small>'}</div><b class="card-detail-link">اقرأ تفاصيل البرنامج <span>←</span></b></div>`;
       return `<a class="program-card" href="program-detail.html?id=${encodeURIComponent(id)}" data-reveal>${image}${body}</a>`;
     }).join('');
   }
@@ -185,13 +190,13 @@
     section.className = 'content-section impact-live-section';
     const statsHTML = stats.length ? `<div class="impact-stat-grid">${stats.map((item) => `<article data-reveal><strong>${escapeHTML(item.value)}</strong><h3>${escapeHTML(item.label)}</h3>${item.summary ? `<p>${escapeHTML(item.summary)}</p>` : ''}</article>`).join('')}</div>` : '';
     const reportsHTML = reports.length ? `<div class="impact-report-list"><div class="section-heading"><span class="eyebrow">تقارير الأثر</span><h2>وثائق القياس والنتائج</h2></div>${reports.map(resourceItem).join('')}</div>` : '';
-    section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">بيانات الأثر</span><h2>أرقام توضّح ما تحقق.</h2></div><p>المؤشرات التجريبية موضحة بعبارة «تجريبي»، وتُستبدل بالبيانات المعتمدة قبل الإطلاق.</p></div>${statsHTML}${reportsHTML}</div>`;
+    section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">بيانات الأثر</span><h2>أرقام توضّح ما تحقق.</h2></div><p>قريبًا.</p></div>${statsHTML}${reportsHTML}</div>`;
   }
 
   function newsCards(items) {
     return items.map((item, index) => {
       const id = item.id || `news-${index + 1}`;
-      const content = `<span class="media-news-image"><img src="${escapeHTML(item.image || 'assets/images/demo/news-demo.svg')}" alt="${escapeHTML(item.title)}" loading="lazy"><i>قراءة الخبر</i></span><div><span>${escapeHTML(item.date || 'خبر الجمعية')}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || '')}</p><b class="card-detail-link">عرض التفاصيل <span>←</span></b></div>`;
+      const content = `<span class="media-news-image"><img src="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" alt="${escapeHTML(item.title)}" loading="lazy"><i>قراءة الخبر</i></span><div><span>${escapeHTML(item.date || 'خبر الجمعية')}</span><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.summary || '')}</p><b class="card-detail-link">عرض التفاصيل <span>←</span></b></div>`;
       return `<a class="media-news-card" href="news-detail.html?id=${encodeURIComponent(id)}" data-reveal>${content}</a>`;
     }).join('');
   }
@@ -201,6 +206,7 @@
     const news = Array.isArray(data.news) ? data.news : [];
     const gallery = Array.isArray(data.gallery) ? data.gallery : [];
     const documents = Array.isArray(data.documents) ? data.documents : [];
+    if (!news.length && !gallery.length && !documents.length) return;
     const section = $('#cms-media-content');
     if (section) {
       const newsHTML = news.length ? `<div class="media-news-grid">${newsCards(news)}</div>` : '';
@@ -238,7 +244,7 @@
       ['الحالة', item.status || item.meta]
     ].filter((pair) => pair[1]);
     container.innerHTML = `<article class="program-detail">
-      <div class="detail-cover" data-reveal><img src="${escapeHTML(item.image || 'assets/images/demo/program-demo.svg')}" alt="${escapeHTML(item.title)}"><span>${escapeHTML(item.category || 'برامج الجمعية')}</span></div>
+      <div class="detail-cover" data-reveal><img src="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" alt="${escapeHTML(item.title)}"><span>${escapeHTML(item.category || 'برامج الجمعية')}</span></div>
       <div class="detail-content" data-reveal><span class="eyebrow">البرنامج والمبادرة</span><h1>${escapeHTML(item.title)}</h1><p class="detail-lead">${escapeHTML(item.summary || '')}</p>
       ${facts.length ? `<dl class="detail-facts">${facts.map(([label, value]) => `<div><dt>${escapeHTML(label)}</dt><dd>${escapeHTML(value)}</dd></div>`).join('')}</dl>` : ''}
       <section class="detail-copy"><h2>عن البرنامج</h2><p>${escapeHTML(item.details || item.description || item.summary || '')}</p></section>
@@ -259,7 +265,7 @@
     document.title = `${item.title} | جمعية أثر القيم`;
     container.innerHTML = `<article class="news-detail">
       <div class="news-detail-heading" data-reveal><span class="eyebrow">المركز الإعلامي</span><time>${escapeHTML(item.date || 'خبر الجمعية')}</time><h1>${escapeHTML(item.title)}</h1><p class="detail-lead">${escapeHTML(item.summary || '')}</p></div>
-      <button class="news-detail-image" type="button" data-lightbox-image="${escapeHTML(item.image || 'assets/images/demo/news-demo.svg')}" data-lightbox-title="${escapeHTML(item.title)}" data-lightbox-caption="${escapeHTML(item.summary || '')}" data-reveal><img src="${escapeHTML(item.image || 'assets/images/demo/news-demo.svg')}" alt="${escapeHTML(item.title)}"><span>تكبير الصورة</span></button>
+      <button class="news-detail-image" type="button" data-lightbox-image="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" data-lightbox-title="${escapeHTML(item.title)}" data-lightbox-caption="${escapeHTML(item.summary || '')}" data-reveal><img src="${escapeHTML(item.image || 'assets/images/content-placeholder.svg')}" alt="${escapeHTML(item.title)}"><span>تكبير الصورة</span></button>
       <div class="detail-copy news-detail-copy" data-reveal><p>${escapeHTML(item.content || item.details || item.summary || '')}</p>${item.link ? `<a class="button button--navy" href="${escapeHTML(item.link)}" target="_blank" rel="noopener">فتح المصدر الخارجي</a>` : ''}</div>
     </article>`;
   }
@@ -270,7 +276,7 @@
     const items = data.partners;
     if (!items.length) return;
     section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">شركاء الأثر</span><h2>شراكات تعزّز الوصول والأثر.</h2></div><p>تظهر الجهات الشريكة والداعمة بعد إضافتها من لوحة الإدارة.</p></div><div class="partner-grid">${items.map((item) => {
-      const content = `<span class="partner-logo"><img src="${escapeHTML(item.logo || 'assets/images/demo/partner-demo.svg')}" alt="شعار ${escapeHTML(item.name)}" loading="lazy"></span><strong>${escapeHTML(item.name)}</strong><p>${escapeHTML(item.summary || '')}</p>`;
+      const content = `<span class="partner-logo"><img src="${escapeHTML(item.logo || 'assets/images/athar-logo-secondary-v2.png')}" alt="شعار ${escapeHTML(item.name)}" loading="lazy"></span><strong>${escapeHTML(item.name)}</strong><p>${escapeHTML(item.summary || '')}</p>`;
       return item.url ? `<a class="partner-card" href="${escapeHTML(item.url)}" target="_blank" rel="noopener" data-reveal>${content}</a>` : `<article class="partner-card" data-reveal>${content}</article>`;
     }).join('')}</div></div>`;
   }
