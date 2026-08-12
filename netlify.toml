@@ -8,7 +8,28 @@
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
 
+
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow, noarchive"
+    X-Frame-Options = "DENY"
+    Cache-Control = "no-store"
+
 [[headers]]
   for = "/assets/uploads/*"
   [headers.values]
     Cache-Control = "public, max-age=3600"
+
+# Canonical host migration: keep the old Netlify hostname only as a permanent redirect.
+[[redirects]]
+  from = "https://athar-alqym.netlify.app/*"
+  to = "https://atharalqiyam.org.sa/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://athar-alqym.netlify.app/*"
+  to = "https://atharalqiyam.org.sa/:splat"
+  status = 301
+  force = true

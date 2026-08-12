@@ -4,4 +4,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /cms.html
 
-Sitemap: https://athar-alqym.netlify.app/sitemap.xml
+Sitemap: https://atharalqiyam.org.sa/sitemap.xml

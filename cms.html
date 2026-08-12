@@ -3,7 +3,7 @@
 
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
-  const demoMode = new URLSearchParams(location.search).get('demo') === '1';
+  const demoMode = false;
   const branch = 'main';
   const files = {
     site: 'data/site.json',
