@@ -223,10 +223,13 @@
     const stats = Array.isArray(data.statistics) ? data.statistics : [];
     const reports = Array.isArray(data.reports) ? data.reports : [];
     if (!stats.length && !reports.length) return;
+    setText('.page-hero p', 'مؤشرات وتقارير تعكس أثر برامج الجمعية.');
+    const coming = $('.impact-coming');
+    if (coming) coming.hidden = true;
     section.className = 'content-section impact-live-section';
     const statsHTML = stats.length ? `<div class="impact-stat-grid">${stats.map((item) => `<article data-reveal><strong>${escapeHTML(item.value)}</strong><h3>${escapeHTML(item.label)}</h3>${item.summary ? `<p>${escapeHTML(item.summary)}</p>` : ''}</article>`).join('')}</div>` : '';
     const reportsHTML = reports.length ? `<div class="impact-report-list"><div class="section-heading"><span class="eyebrow">تقارير الأثر</span><h2>وثائق القياس والنتائج</h2></div>${reports.map(resourceItem).join('')}</div>` : '';
-    section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">بيانات الأثر</span><h2>أرقام توضّح ما تحقق.</h2></div><p>قريبًا.</p></div>${statsHTML}${reportsHTML}</div>`;
+    section.innerHTML = `<div class="container"><div class="section-heading section-heading--split"><div><span class="eyebrow">بيانات الأثر</span><h2>أرقام توضّح ما تحقق.</h2></div></div>${statsHTML}${reportsHTML}</div>`;
   }
 
   function newsCards(items) {
