@@ -1,4 +1,12 @@
 {
-  "statistics": [],
+  "statistics": [
+    {
+      "id": "stat-1789987950346-0ung4y",
+      "label": "البرامج",
+      "value": "3",
+      "unit": "",
+      "summary": "تم اقامة 3 برامج"
+    }
+  ],
   "reports": []
 }
